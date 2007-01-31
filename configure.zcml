@@ -1,0 +1,27 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+	   xmlns:browser="http://namespaces.zope.org/browser"
+	   xmlns:five="http://namespaces.zope.org/five">
+
+  <include package="zope.app.annotation" />
+
+  <adapter for=".interfaces.IFileContent"
+	   factory=".adapters.ToFilePreview"
+	   provides=".interfaces.IFilePreview" />
+
+  <browser:page
+      for=".interfaces.IFilePreview"
+      name="HTMLPreview"
+      class=".views.FilePreview"
+      permission="zope.Public"
+      allowed_interface=".interfaces.IFilePreview"
+      />
+
+  <subscriber
+      for=".interfaces.IFilePreview
+           zope.app.event.interfaces.IObjectCreatedEvent"
+      handler=".events."
+      />
+  <include package=".browser" />
+
+</configure>
+
