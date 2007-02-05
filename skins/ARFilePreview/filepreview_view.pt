@@ -1,0 +1,61 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master">
+
+  <head><title></title></head>
+
+  <body>
+     <div metal:fill-slot="main">
+      <metal:main_macro define-macro="main">
+
+        <metal:header_macro define-macro="header">
+          <div metal:use-macro="here/document_actions/macros/document_actions">
+            Document actions (print, sendto etc)
+          </div>
+          <h1 tal:content="here/title_or_id" />
+          <div metal:use-macro="here/filepreview_history/macros/review_history">
+          </div>
+          <br/><br/>
+        </metal:header_macro>
+
+        <metal:body_macro metal:define-macro="body"
+                          tal:define="field_macro field_macro | here/widgets/field/macros/view;"
+                          tal:repeat="field python:here.Schema().filterFields(isMetadata=0)">
+          <tal:if_visible define="mode string:view;
+                                  visState python:field.widget.isVisible(here, mode);
+                                  visCondition python:field.widget.testCondition(here, portal, template);"
+                          condition="python:visState == 'visible' and visCondition">
+            <metal:use_field use-macro="field_macro" />
+          </tal:if_visible>
+          <tal:if_preview
+              tal:condition="python:field.widget.label=='Previsualisation'">
+            <br/>
+            <fieldset id="preview" class="block"
+                tal:condition="python:len(here.getHTMLPreview())">
+              <legend class="collapsibleHeader" style="font-weight: bold">
+                Pr&eacute;visualisation:    ( <a tal:attributes="href python:context.id + '/filepreview_fullview'" target="_blanc"> Voir en plein &eacute;cran</a> )
+              </legend>
+              <div class="collapsibleContent" style="position: relative; overflow: auto; height: 600px;"
+                  tal:content="structure python:here.getHTMLPreview()" />
+            </fieldset>
+          </tal:if_preview>
+        </metal:body_macro>
+
+        <metal:folderlisting_macro metal:define-macro="folderlisting">
+        </metal:folderlisting_macro>
+
+        <metal:footer_macro define-macro="footer">
+        </metal:footer_macro>
+
+        <div metal:use-macro="here/document_relateditems/macros/relatedItems">
+            show related items if they exist
+        </div>
+
+      </metal:main_macro>
+    </div>
+  </body>
+
+</html>

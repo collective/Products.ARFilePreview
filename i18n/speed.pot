@@ -1,0 +1,119 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Plone 2.1\n"
+"POT-Creation-Date: 2006-02-06 02:30+0000\n"
+"PO-Revision-Date: 2006-01-29 23:00+0000\n"
+"Last-Translator: Hanno Schlichting <schlichting@bakb.net>\n"
+"Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8\n"
+"Domain: speed\n"
+
+#: ./content/SpeedFile.py:35
+msgid "Select the file to be added by clicking the 'Browse' button."
+msgstr ""
+
+#: ./content/SpeedFolder.py:42
+msgid "Subscription"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:19
+msgid "subscription_heading"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:26
+msgid "subscription_text_description"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:38
+msgid "subscription_legend_change"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:43
+msgid "subscription_text_not_subscribed"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:47
+msgid "subscription_button_subscribe"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:53
+msgid "subscription_text_subscribed"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:56
+msgid "subscription_button_unsubscribe"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:65
+msgid "subscription_legend_change"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:73
+msgid "subscription_summary_currently_subscribed"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:78
+msgid "subscription_theader_user"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:79
+msgid "subscription_theader_subscribed_to_parent"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:80
+msgid "subscription_theader_subscribed_locally"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:91
+msgid "subscription_ttext_inherited"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:115
+msgid "subscription_button_apply"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:124
+msgid "subscription_label_select_user"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpt:137
+msgid "subscription_button_add"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpy:21
+msgid "subscription_status_subscribed"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpy:31
+msgid "subscription_status_unsubscribed"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpy:49
+msgid "subscription_status_subscriptions_applied"
+msgstr ""
+
+#: ./skins/speed_content/speed_subscription.cpy:60
+msgid "subscription_status_subscribed_added"
+msgstr ""
+
+#: ./SpeedTool.py:139
+msgid "subscription_mail_subject"
+msgstr ""
+
+#: ./SpeedTool.py:186
+msgid "notifyauthor_published_subject"
+msgstr ""
+
+#: ./SpeedTool.py:192
+msgid "notifyauthor_rejected_subject"
+msgstr ""
+
+#: ./SpeedTool.py:232
+msgid "notifyreviewer_pending_subject"
+msgstr ""

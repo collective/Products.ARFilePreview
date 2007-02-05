@@ -1,0 +1,9 @@
+<metal:main metal:define-macro="footer"
+        i18n:domain="filepreview">
+    <p i18n:domain="filepreview" i18n:translate="filepreview_slownotice"
+            style="color: #800; font-weight: bold;">
+        After clicking on the &quot;save&quot; button, it may take a few minutes to send the file to the server and convert it for preview.
+        <br/>
+        Please wait while this process takes place.
+    </p>
+</metal:main>
