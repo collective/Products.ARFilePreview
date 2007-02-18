@@ -8,13 +8,10 @@
   <head><title></title></head>
 
   <body>
-
     <div metal:fill-slot="main">
-
       <metal:main_macro define-macro="main">
 
         <metal:header_macro define-macro="header">
-	  <tal:block omit-tag="" content="here/updatePreview" />
           <div metal:use-macro="here/document_actions/macros/document_actions">
             Document actions (print, sendto etc)
           </div>
@@ -52,15 +49,13 @@
 
         <metal:footer_macro define-macro="footer">
         </metal:footer_macro>
-        
+
         <div metal:use-macro="here/document_relateditems/macros/relatedItems">
             show related items if they exist
         </div>
 
       </metal:main_macro>
-
     </div>
-
   </body>
 
 </html>

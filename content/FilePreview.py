@@ -74,7 +74,7 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
     
     _at_rename_after_creation = False
     
-    _v_changedfile = False
+    _v_changedfile = True
     
     def __bobo_traverse__(self, REQUEST, name):
         '''transparent access to document subobjects
@@ -91,10 +91,9 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
             return data
         else:
             # fallback
-            return ATCTContent.__bobo_traverse__(self, REQUEST, name)
+            return ATCTContent.__bobo_traverse__(self, REQUEST, name)    
     
-    
-    def updateTiteul(self, newTitle=None, num=-1):
+    def updateFPTitle(self, newTitle=None, num=-1):
         """
         This method sets the title from the filename
         """
@@ -104,11 +103,10 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
             base, ext = splitext(newTitle)
             newTitle="%s-%02d%s"%(base, num, ext)
         newTitle = re.sub("[_-]"," ", newTitle)
-        if newTitle!=self.Title():
-            #log.log("TITLE : "+self.Title()+ " -> "+ newTitle)
+        if newTitle!=unicode(self.Title(charset='utf-8'), 'utf-8'):
             self.setTitle(newTitle)
     
-    def updateAydi(self, filename):
+    def updateFPId(self, filename):
         """
         This method sets the id from the filename
         """
@@ -137,9 +135,9 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
         This method extracts a html preview from the file
         """
         #print "UPDATEPREVIEW"
-        if not self._v_changedfile:
-            return
-        self._v_changedfile=False
+##        if not self._v_changedfile:
+##            return
+##        self._v_changedfile=False
         
         #get original document
         file=self.getOriginalFile()
@@ -161,10 +159,10 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
         #convert to text/html
         transforms = getToolByName(self, 'portal_transforms')
         data=transforms.convertTo('text/html', inputdata, filename=file.filename)
-        #print "PDF  :", len(inputdata)
-        #print "HTML :", data
-        #if the transformation went fine
-        if data is not None:
+
+        if data is None:
+          self.setHTMLPreview(u"")
+        else:
             #get the html code
             html_converted = data.getData()
             #update internal links
@@ -173,7 +171,7 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
             # patch image sources since html base is that of our parent
             subobjs = data.getSubObjects()
             if len(subobjs)>0:
-                self.document_subobjects = SubMapper(data.getSubObjects())
+                self.document_subobjects = SubMapper( subobjs)
                 html_converted = self.document_subobjects.__of__(self).map_it(html_converted)
             #html_converted=self.getitconverted(html_converted)
         #store the html in the HTMLPreview field for preview
@@ -187,8 +185,10 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
         fieldset = REQUEST.form.get('fieldset', 'default')
         if fieldset == 'default':
           #if the REQUEST send us a file, replace the id with filename
-          if (not ('OriginalFile_delete' in REQUEST)) or (REQUEST['OriginalFile_delete']!="nochange"):
-            self._v_changedfile=True
+          if REQUEST.get('OriginalFile_delete', "")!="nochange":
+              self._v_changedfile=True
+          else:
+              self._v_changedfile=False
         
     # This method is only called once after object creation.
     def at_post_create_script(self):
@@ -198,12 +198,13 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
         and parse it for metadata (updateMetadata)
         """
         #print "POST_CREATE"
-        filename=self.getOriginalFile().filename
-        idobj, fnum = self.updateAydi(filename)
-        self.getOriginalFile().filename = idobj
-        self.updatePreview()
-        if len(self.Title().strip())==0:
-            self.updateTiteul(newTitle=filename, num=fnum)
+        if self._v_changedfile and bool(self.getOriginalFile()):
+            filename=self.getOriginalFile().filename
+            idobj, fnum = self.updateFPId(filename)
+            self.getOriginalFile().filename = idobj
+            self.updatePreview()
+            if len(self.Title().strip())==0:
+                self.updateFPTitle(newTitle=filename, num=fnum)
         self.reindexObject()
         
     def at_post_edit_script(self):
@@ -213,14 +214,12 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
         and parse it for metadata (updateMetadata)
         """
         #print "POST_EDIT"
-        if self._v_changedfile:
+        if self._v_changedfile and bool(self.getOriginalFile()):
             filename = self.getOriginalFile().filename
-            idobj, fnum = self.updateAydi(filename)
+            idobj, fnum = self.updateFPId(filename)
             self.getOriginalFile().filename = idobj
-            self.updateTiteul(newTitle=filename, num = fnum)
-            self.updatePreview()
+            self.updateFPTitle(newTitle=filename, num = fnum)
             self._v_changedfile=False
-            self.reindexObject()
         self.updatePreview()
         self.reindexObject()
         
@@ -232,22 +231,12 @@ class FilePreview(ATCTContent, HistoryAwareMixin):
         This method is called after a FTP/WebDAV PUT has been marshalled.
         """
         self._v_changedfile=True
-        filename = unicode(urllib.unquote(REQUEST._steps[-2]).decode('iso-8859-1','ignore'))
-        idobj, fnum = self.updateAydi(filename)
+        filename = unicode(urllib.unquote(REQUEST._steps[-2]).decode('utf-8','ignore'))
+        idobj, fnum = self.updateFPId(filename)
         self.getOriginalFile().filename=idobj
-        self.updateTiteul(newTitle=filename, num = fnum)
+        ##self.updateFPTitle(newTitle=filename, num = fnum)
         self.updatePreview()
-        
         self.reindexObject()
         ATCTContent.manage_afterPUT(self,data,marshall_data,file,context,mimetype,filename,REQUEST,RESPONSE)
         
-    
-    def manage_afterAdd(self, item, container):
-        """
-        plop
-        """
-        #print "MANAGE_AFTERADD"
-        ATCTContent.manage_afterAdd(self,item,container)
-        #self.updatePreview()
-    
 registerATCT(FilePreview,PROJECTNAME)
