@@ -1,30 +1,42 @@
-from Products.Archetypes.public import process_types, listTypes
-from Products.CMFCore import utils
-from Products.CMFCore.DirectoryView import registerDirectory
+# -*- coding: utf-8 -*-
+#
+# File: ARFilePreview/__init__.py
+#
+# Copyright (c) 2007 atReal
+#
+# GNU General Public License (GPL)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
 
-from Products.ARFilePreview.config import PROJECTNAME,ADD_FILEPREVIEW_PERMISSION,SKINS_DIR,GLOBALS
+"""
+$Id$
+"""
 
-registerDirectory(SKINS_DIR, GLOBALS)
+__author__ = """Jean-Nicolas Bès <contact@atreal.net>"""
+__docformat__ = 'plaintext'
+__licence__ = 'GPL'
 
-def initialize(context):
-  ##Import Types here to register them
-  print "="*40
-  print "atReal : ARFilePreview initialization in progress"
-  from content import FilePreview
+print "================================================"
+print "atReal : ARFilePreview"
+print "================================================"
 
-  content_types, constructors, ftis = process_types(
-       listTypes(PROJECTNAME), PROJECTNAME)
-  
-  allTypes = zip(content_types, constructors)
-  
-  for atype, constructor in allTypes:
-    print "    atReal : initialize %s/%s" % (PROJECTNAME, atype.archetype_name)
-    utils.ContentInit(
-       "%s: %s" % (PROJECTNAME, atype.archetype_name),
-       content_types      = (atype,),
-       permission         = ADD_FILEPREVIEW_PERMISSION[atype.portal_type],
-       extra_constructors = (constructor,),
-       fti                = ftis,
-       ).initialize(context)
-  print "="*40
-  
+from Products.CMFCore.permissions       import setDefaultRoles
+from Products.CMFCore.DirectoryView     import registerDirectory
+from Products.ARDeadline.config  import *
+
+# register skin directories so they can be added to portal_skins
+registerDirectory('skins', GLOBALS)

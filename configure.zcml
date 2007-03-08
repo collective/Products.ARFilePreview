@@ -1,0 +1,38 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+	   xmlns:browser="http://namespaces.zope.org/browser"
+	   xmlns:five="http://namespaces.zope.org/five">
+
+  <include package="zope.app.annotation" />
+
+
+  <five:implements class="Products.ATContentTypes.content.base.ATCTFileContent"
+	      interface=".interfaces.IPreviewAware
+                         zope.app.annotation.interfaces.IAttributeAnnotatable" />
+
+  <adapter for=".interfaces.IPreviewAware"
+	   factory=".adapters.ToPreviewableObject"
+	   provides=".interfaces.IPreviewable" />
+
+  <browser:page
+      for=".interfaces.IPreviewAware"
+      name="preview_provider"
+      class=".views.PreviewProvider"
+      permission="zope.Public"
+      allowed_interface=".interfaces.IPreviewProvider"
+      />
+
+  <subscriber
+      for=".interfaces.IPreviewAware
+           zope.app.event.interfaces.IObjectModifiedEvent"
+      handler=".events.buildAndStorePreview"
+      />
+
+  <subscriber
+      for=".interfaces.IPreviewAware
+           zope.app.event.interfaces.IObjectCreatedEvent"
+      handler=".events.buildAndStorePreview"
+      />
+  
+  
+</configure>
+

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: ARFilePreview/Extensions/Install.py
+# File: ARDeadline/events.py
 #
 # Copyright (c) 2007 atReal
 #
@@ -30,21 +30,12 @@ __author__ = """Jean-Nicolas Bès <contact@atreal.net>"""
 __docformat__ = 'plaintext'
 __licence__ = 'GPL'
 
+from Acquisition import aq_base
 
-from StringIO import StringIO
-from Products.ARFilePreview.config    import *
-from Products.Archetypes.Extensions.utils import install_subskin
-
-def install(self):
-    """
-    Install ARFilePreview
-    """
-    out = StringIO()
-    print "installed ARFilePreview"
-    install_subskin(self, out, GLOBALS)
-    return out.getvalue()
+from Products.ARFilePreview.interfaces import IPreviewable
 
 
-def uninstall(self):
-    out = StringIO()
-    return out.getvalue()
+def buildAndStorePreview(obj, event):
+    """ """
+    print "BUILD AND STORE PREVIEW"
+    IPreviewable(obj).buildAndStorePreview()

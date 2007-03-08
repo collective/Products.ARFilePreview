@@ -1,8 +1,0 @@
-<html>
-  <head>
-    <title tal:content="here/Title"></title>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-  </head>
-  <body tal:content="structure here/getHTMLPreview">
-  </body>
-</html>

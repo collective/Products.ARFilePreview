@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: ARFilePreview/Extensions/Install.py
+# File: ARDeadline/interfaces.py
 #
 # Copyright (c) 2007 atReal
 #
@@ -31,20 +31,49 @@ __docformat__ = 'plaintext'
 __licence__ = 'GPL'
 
 
-from StringIO import StringIO
-from Products.ARFilePreview.config    import *
-from Products.Archetypes.Extensions.utils import install_subskin
-
-def install(self):
-    """
-    Install ARFilePreview
-    """
-    out = StringIO()
-    print "installed ARFilePreview"
-    install_subskin(self, out, GLOBALS)
-    return out.getvalue()
+from zope.interface import Interface
+from zope.app.event.interfaces import IObjectModifiedEvent
 
 
-def uninstall(self):
-    out = StringIO()
-    return out.getvalue()
+class IPreviewAware( Interface ):
+    """ marker interface """
+
+class IPreviewable( Interface ):
+    
+    def hasPreview( ):
+        """
+        Has the preview
+        """
+    
+    def setPreview( preview):
+        """
+        Sets the preview
+        """
+    
+    def getPreview( ):
+        """
+        Get the preview
+        """
+   
+class IPreviewProvider( Interface ):
+    
+    def hasPreview( ):
+        """
+        Has the preview
+        """
+    
+    def getPreview( ):
+        """
+        Get the preview
+        """
+        
+    def getFullPreview( ):
+        """
+        Gets the preview wrapped into an html page
+        """
+    
+    def updatePreview( ):
+        """
+        update the preview by retransforming original file and store it
+        """
+    
