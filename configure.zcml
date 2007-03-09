@@ -20,6 +20,13 @@
       permission="zope.Public"
       allowed_interface=".interfaces.IPreviewProvider"
       />
+  
+  <browser:page
+      for=".interfaces.IPreviewAware"
+      name="preview_full"
+      template="templates/fullview.pt"
+      permission="zope.Public"
+      />
 
   <subscriber
       for=".interfaces.IPreviewAware

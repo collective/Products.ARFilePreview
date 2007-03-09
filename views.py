@@ -68,13 +68,6 @@ class PreviewProvider( BrowserView ):
         """
         return self.object.getPreview()
     
-    def getFullPreview(self):
-        """
-        """
-        prefix = """<html><head><title></title><base href="%s" /></head><body>""" % self.context.absolute_url()
-        suffix = """</body></html>"""
-        return prefix+self.object.getPreview()+suffix
-    
     def updatePreview(self):
         """
         """

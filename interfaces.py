@@ -67,11 +67,6 @@ class IPreviewProvider( Interface ):
         Get the preview
         """
         
-    def getFullPreview( ):
-        """
-        Gets the preview wrapped into an html page
-        """
-    
     def updatePreview( ):
         """
         update the preview by retransforming original file and store it

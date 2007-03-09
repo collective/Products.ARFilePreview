@@ -65,6 +65,9 @@
     
         <div class="row"
              tal:condition="here/@@preview_provider/hasPreview">
+            
+            <a tal:attributes="href python:here.absolute_url()+'/@@preview_full'"
+               style="float: right;" target="_blanc">plein écran</a>
     
             <h2 i18n:translate="heading_file_contents">File contents</h2>
     
