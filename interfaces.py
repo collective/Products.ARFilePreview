@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: ARDeadline/interfaces.py
+# File: ARFilePreview/interfaces.py
 #
 # Copyright (c) 2007 atReal
 #

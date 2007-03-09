@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: ARDeadline/events.py
+# File: ARFilePreview/events.py
 #
 # Copyright (c) 2007 atReal
 #
