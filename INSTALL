@@ -1,0 +1,5 @@
+Installation
+------------
+
+The previews will be built as soon as you unpack the product in Products.
+The file_view template will replace the default one if you install ARFilePreview in the QuickInstaller.
