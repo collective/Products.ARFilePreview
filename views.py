@@ -73,6 +73,29 @@ class PreviewProvider( BrowserView ):
         """
         self.object.buildAndStorePreview()
     
+
+    ## XXX This should NOT be here !!
+    ## but I wanted the feature badly...
+    def updateAllPreviews(self):
+        """
+        """
+        pc = self.context.portal_catalog
+        brains = pc(portal_type='File')
+        status=""
+        for brain in brains:
+            status+="<div>"+brain.getPath()
+            print "UPDATE ALL PREVIEWS "+brain.getPath()
+            try:
+                obj=brain.getObject()
+                IPreviewable(obj).buildAndStorePreview()
+                obj.reindexObject()
+            except Exception, e:
+                status+=" %s %s</div>" % (str(e.__class__.__name__), str(e))
+            else:
+                status+=" OK</div>\n"
+        return status
+
+
     def __bobo_traverse__(self, REQUEST, name):
         '''transparent access to document subobjects
         '''

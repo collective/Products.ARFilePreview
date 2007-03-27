@@ -72,3 +72,7 @@ class IPreviewProvider( Interface ):
         update the preview by retransforming original file and store it
         """
     
+    def updateAllPreviews( ):
+        """
+        update all the previews reachable from the catalog
+        """
