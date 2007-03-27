@@ -44,8 +44,6 @@ from Products.ARFilePreview.interfaces import IPreviewable
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute
 
-from Products.ARFilePreview.submapper import SubMapper
-
 class ToPreviewableObject( object ):
     
     implements( IPreviewable )
@@ -58,10 +56,10 @@ class ToPreviewableObject( object ):
             self.sublist = sublist
             self.instance = instance
         
-        def __call__(self, m):
-            prefix = m.group(1)
-            inside = m.group(2)
-            postfix = m.group(3)
+        def __call__(self, match):
+            prefix = match.group(1)
+            inside = match.group(2)
+            postfix = match.group(3)
             # patch inside
             if inside.startswith('./'):
                 # some .swt are converted with this prefix
@@ -96,7 +94,7 @@ class ToPreviewableObject( object ):
         if mimetype!="text/html":
             transforms = getToolByName(self.context, 'portal_transforms')
             filename = self.context.getPrimaryField().getAccessor(self.context)().filename+".html"
-            return transforms.convertTo(mimetype, data.encode('utf-8'), mimetype="text/html", filename = filename).decode('utf-8')
+            return str(transforms.convertTo(mimetype, data.encode('utf-8'), mimetype="text/html", filename = filename)).decode('utf-8')
         return data
     
     def setSubObject(self, name, data):
@@ -137,13 +135,14 @@ class ToPreviewableObject( object ):
             html_converted = self._re_imgsrc.sub(self._replacer(subobjs.keys(), self.context), html_converted)
         #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted.decode('utf-8'))
+	self.context.reindexObject()
 
 def previewIndexWrapper(object, portal, **kwargs):
     data = object.SearchableText()
     try:
         obj = IPreviewable(object)
         preview = obj.getPreview(mimetype="text/plain")
-        return " ".join([data, str(preview)])
+        return " ".join([data, preview.encode('utf-8')])
     except (ComponentLookupError, TypeError, ValueError):
         # The catalog expects AttributeErrors when a value can't be found
         return data
