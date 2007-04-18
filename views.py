@@ -84,7 +84,6 @@ class PreviewProvider( BrowserView ):
         status=""
         for brain in brains:
             status+="<div>"+brain.getPath()
-            print "UPDATE ALL PREVIEWS "+brain.getPath()
             try:
                 obj=brain.getObject()
                 IPreviewable(obj).buildAndStorePreview()
@@ -101,7 +100,6 @@ class PreviewProvider( BrowserView ):
         '''
         try:
             data, mime = self.object.getSubObject(name)
-            print "BOBO", mime, len(data)
         except AttributeError:
             pass
         else:

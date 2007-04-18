@@ -40,8 +40,12 @@ def install(self):
     Install ARFilePreview
     """
     out = StringIO()
-    print "installed ARFilePreview"
+    pt = self.portal_types
+    pt['File'].default_view = "file_preview"
+    pt['File'].immediate_view = "file_preview"
+    pt['File'].view_methods += ("file_preview", "file_asdoc")
     install_subskin(self, out, GLOBALS)
+    print "installed ARFilePreview"
     return out.getvalue()
 
 
