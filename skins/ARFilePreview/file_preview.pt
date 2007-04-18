@@ -27,7 +27,9 @@
            tal:condition="here/Description">
             Description
         </p>
-    
+        
+        <br />
+        
         <p>
             <a href=""
                tal:attributes="href here_url">
@@ -36,32 +38,33 @@
                 Click here to get the file
                 </tal:block>
             </a>
+            <small class="discreet">
+                <span i18n:translate="label_size">
+                Size
+                </span>
+                
+                <span tal:condition="size"
+                    tal:content="size">
+                257 KB
+                </span>
+        
+                <span tal:condition="python:test(size,0,1)" i18n:translate="no_file_uploaded">
+                  (No file has been uploaded yet)
+                </span>
+        
+                -
+                
+                <span i18n:translate="label_file_type">
+                File type
+                </span>
+        
+                <span tal:content="content_type">
+                Content type
+                </span>
+            </small>
         </p>
     
-        <small class="discreet">
-            <span i18n:translate="label_size">
-            Size
-            </span>
-            
-            <span tal:condition="size"
-                tal:content="size">
-            257 KB
-            </span>
-    
-            <span tal:condition="python:test(size,0,1)" i18n:translate="no_file_uploaded">
-              (No file has been uploaded yet)
-            </span>
-    
-            -
-            
-            <span i18n:translate="label_file_type">
-            File type
-            </span>
-    
-            <span tal:content="content_type">
-            Content type
-            </span>
-        </small>
+        <br />
     
         <div class="row"
              tal:condition="here/@@preview_provider/hasPreview">
