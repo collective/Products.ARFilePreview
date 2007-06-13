@@ -5,7 +5,7 @@
   <include package="zope.app.annotation" />
 
 
-  <five:implements class="Products.ATContentTypes.content.base.ATCTFileContent"
+  <five:implements class="Products.ATContentTypes.content.file.ATFile"
 	      interface=".interfaces.IPreviewAware
                          zope.app.annotation.interfaces.IAttributeAnnotatable" />
 
