@@ -51,4 +51,14 @@ def install(self):
 
 def uninstall(self):
     out = StringIO()
+    pt = self.portal_types
+    pt['File'].default_view = "file_view"
+    pt['File'].immediate_view = "file_view"
+    avViews = []
+    for view in pt['File'].view_methods:
+        if view in ["file_preview", "file_asdoc"]:
+            continue
+        avViews.append(view)
+    pt['File'].view_methods = tuple(avViews)
+    uninstall_subskin(self, out, "ARFilePreview")
     return out.getvalue()
