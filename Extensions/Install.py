@@ -60,5 +60,4 @@ def uninstall(self):
             continue
         avViews.append(view)
     pt['File'].view_methods = tuple(avViews)
-    uninstall_subskin(self, out, "ARFilePreview")
     return out.getvalue()
