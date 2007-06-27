@@ -17,5 +17,26 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
   MA 02111-1307 USA.
 
-  ARFilePreview provides the ability to load a file and have under the download link a preview of the file.
-  The preview is based on portal_transforms and can support as many formats than transforms installed.
+ARFilePreview provides the ability to load a file and have under the download link a preview of the file.
+The preview is based on portal_transforms and can support as many formats as transforms installed.
+
+ARFilePReview works fine with FTP, WebDAV and ZopeExternalEditor
+
+Initial concept:
+
+o Ando RAKOTONIRINA, Julien TOGNAZZI - INSERM DSI 
+
+Developpers:
+
+o Jean-Nicolas BES - atReal <contact@atreal.net>
+o Matthias BROQUET - atReal <contact@atreal.net>
+o Therry BENITA - atReal <contact@atreal.net>
+
+Contributors:
+
+o Balazs REE - Greenfinity <ree@ree.hu>
+
+Sponsors:
+INSERM DSI - http://www.inserm.fr
+SCET - http://www.scet.fr
+
