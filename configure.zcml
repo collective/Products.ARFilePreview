@@ -34,12 +34,5 @@
       handler=".events.buildAndStorePreview"
       />
 
-  <subscriber
-      for=".interfaces.IPreviewAware
-           zope.app.event.interfaces.IObjectCreatedEvent"
-      handler=".events.buildAndStorePreview"
-      />
-  
-  
 </configure>
 
