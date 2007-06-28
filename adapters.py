@@ -114,11 +114,7 @@ class ToPreviewableObject( object ):
     
     def buildAndStorePreview(self):
         self.clearSubObjects()
-        try:
-            transforms = getToolByName(self.context, 'portal_transforms')
-        except AttributeError:
-            # no portal_transforms available
-            return
+        transforms = getToolByName(self.context, 'portal_transforms')
         file = self.context.getPrimaryField().getAccessor(self.context)()
         data = transforms.convertTo('text/html', self.context.get_data(), filename=file.filename)
         
