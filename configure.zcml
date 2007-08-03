@@ -2,12 +2,12 @@
 	   xmlns:browser="http://namespaces.zope.org/browser"
 	   xmlns:five="http://namespaces.zope.org/five">
 
-  <include package="zope.app.annotation" />
+  <include package="zope.annotation" />
 
 
   <five:implements class="Products.ATContentTypes.content.file.ATFile"
 	      interface=".interfaces.IPreviewAware
-                         zope.app.annotation.interfaces.IAttributeAnnotatable" />
+                         zope.annotation.interfaces.IAttributeAnnotatable" />
 
   <adapter for=".interfaces.IPreviewAware"
 	   factory=".adapters.ToPreviewableObject"
@@ -25,6 +25,21 @@
       for=".interfaces.IPreviewAware"
       name="preview_full"
       template="templates/fullview.pt"
+      permission="zope2.View"
+      />
+  
+  <browser:page
+      for=".interfaces.IPreviewAware"
+      name="file_asdoc"
+      template="templates/file_asdoc.pt"
+      permission="zope2.View"
+      />
+
+
+  <browser:page
+      for=".interfaces.IPreviewAware"
+      name="file_preview"
+      template="templates/file_preview.pt"
       permission="zope2.View"
       />
 
