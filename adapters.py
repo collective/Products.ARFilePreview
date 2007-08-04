@@ -35,8 +35,11 @@ from DateTime import DateTime
 
 from zope.interface import implements
 from zope.component.exceptions import ComponentLookupError
+from zope.component import queryUtility
 from zope.app.traversing.adapters import Traverser
 from zope.app.annotation.interfaces import IAnnotations
+
+from plone.transforms.interfaces import ITransformEngine
 
 from BTrees.OOBTree import OOBTree
 from Products.CMFCore.utils import getToolByName
@@ -66,7 +69,6 @@ class ToPreviewableObject( object ):
                 inside = inside[2:]
             if inside in self.sublist:
                 # convert elems that are known images 
-                ##inside = '%s/%s' % (self.instance.getOriginalFile().filename, inside)
                 inside = '%s/@@preview_provider/%s' % (self.instance.getId(), inside)
             result = '<img%s src="%s"%s>' % (prefix, inside, postfix)
             return result
@@ -91,10 +93,13 @@ class ToPreviewableObject( object ):
     
     def getPreview(self, mimetype="text/html"):
         data = self.annotations[self.key]['html']
-        if mimetype!="text/html":
-            transforms = getToolByName(self.context, 'portal_transforms')
+        if mimetype!="text/html" and data is not None and data != '' :
+            transforms = queryUtility(ITransformEngine)
+            
             filename = self.context.getPrimaryField().getAccessor(self.context)().filename+".html"
-            return str(transforms.convertTo(mimetype, data.encode('utf-8'), mimetype="text/html", filename = filename)).decode('utf-8')
+            result = transforms.transform(data,'text/html', mimetype)
+            if result is not None :
+                return u''.join(result.data)
         return data
     
     def setSubObject(self, name, data):
@@ -114,27 +119,39 @@ class ToPreviewableObject( object ):
     
     def buildAndStorePreview(self):
         self.clearSubObjects()
-        transforms = getToolByName(self.context, 'portal_transforms')
-        file = self.context.getPrimaryField().getAccessor(self.context)()
-        data = transforms.convertTo('text/html', self.context.get_data(), filename=file.filename)
-        
-        if data is None:
+        transforms = queryUtility(ITransformEngine)
+
+        field = self.context.getPrimaryField()
+        data = self.context.getFile().data
+	if not data:
+	    return
+	def chunk2gen(chunkedData):
+	    while not chunkedData is None:
+	        yield chunkedData.data
+		chunkedData = chunkedData.next
+        if not self.context.isBinary(field.getName()):
+            data=data.decode('utf-8')
+	else:
+            data = chunk2gen( data)
+        result = transforms.transform(data, field.getContentType(self.context),'text/html')
+
+        if result is None:
             self.setPreview(u"")
             return
         
         #get the html code
-        html_converted = data.getData()
+        html_converted = u''.join(result.data)
         #update internal links
         #remove bad character '\xef\x81\xac' from HTMLPreview
         html_converted = re.sub('\xef\x81\xac', "", html_converted)
         # patch image sources since html base is that of our parent
-        subobjs = data.getSubObjects()
+        subobjs = result.subobjects
         if len(subobjs)>0:
             for id, data in subobjs.items():
                 self.setSubObject(id, data)
             html_converted = self._re_imgsrc.sub(self._replacer(subobjs.keys(), self.context), html_converted)
         #store the html in the HTMLPreview field for preview
-        self.setPreview(html_converted.decode('utf-8'))
+        self.setPreview(html_converted)
 	self.context.reindexObject()
 
 def previewIndexWrapper(object, portal, **kwargs):
@@ -142,7 +159,7 @@ def previewIndexWrapper(object, portal, **kwargs):
     try:
         obj = IPreviewable(object)
         preview = obj.getPreview(mimetype="text/plain")
-        return " ".join([data, preview.encode('utf-8')])
+        return " ".join([data, preview])
     except (ComponentLookupError, TypeError, ValueError):
         # The catalog expects AttributeErrors when a value can't be found
         return data
