@@ -146,11 +146,16 @@ class ToPreviewableObject( object ):
         html_converted = re.sub('\xef\x81\xac', "", html_converted)
         # patch image sources since html base is that of our parent
         subobjs = result.subobjects
-        if len(subobjs)>0:
-            for id, data in subobjs.items():
-                self.setSubObject(id, data)
-            html_converted = self._re_imgsrc.sub(self._replacer(subobjs.keys(), self.context), html_converted)
-        #store the html in the HTMLPreview field for preview
+        for subobj in subobjs.keys():
+	    # transorm iterators to strings for subobjects
+	    # we should return the iterator, but it's not possible in sub-objects right now...
+	    self.setSubObject(subobj, ''.join(subobjs[subobj]))
+	#if len(subobjs)>0:
+        #    for id, data in subobjs.items():
+        #        self.setSubObject(id, data)
+        html_converted = self._re_imgsrc.sub(self._replacer(subobjs.keys(), self.context), html_converted)
+        
+	#store the html in the HTMLPreview field for preview
         self.setPreview(html_converted)
 	self.context.reindexObject()
 

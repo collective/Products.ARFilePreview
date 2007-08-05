@@ -19,13 +19,7 @@
       class=".views.PreviewProvider"
       permission="zope2.View"
       allowed_interface=".interfaces.IPreviewProvider"
-      />
-  
-  <browser:page
-      for=".interfaces.IPreviewAware"
-      name="preview_full"
       template="templates/fullview.pt"
-      permission="zope2.View"
       />
   
   <browser:page
