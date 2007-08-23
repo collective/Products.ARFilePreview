@@ -1,4 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
@@ -7,34 +10,33 @@
 
 <div metal:fill-slot="main">
     <tal:main-macro metal:define-macro="main" 
-           tal:define="size python:here.getObjSize(here);
-                       content_type here/get_content_type|here/Format;
-                      ">
-        <div metal:use-macro="here/document_actions/macros/document_actions">
-            Document actions (print, sendto etc)
-        </div>
+           tal:define="content_type here/get_content_type|here/Format;
+                       kssClassesView context/@@kss_field_decorator_view; 
+                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable">
 
-        <h1 tal:content="object_title" class="documentFirstHeading">
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+
+        <h1 metal:use-macro="here/kss_generic_macros/macros/generic_title_view">
             Title or id
         </h1>
-    
-        <div metal:use-macro="here/document_byline/macros/byline">
-          Get the byline - contains details about author and modification date.
-        </div>
 
-        <p class="documentDescription"
-           tal:content="here/Description"
-           tal:condition="here/Description">
-            Description
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+        <p metal:use-macro="here/kss_generic_macros/macros/generic_description_view">
+          Description
         </p>
 
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+    
         <div style="position: relative;"
               tal:content="structure here/@@preview_provider/getPreview" />
-    
+
         <div metal:use-macro="here/document_relateditems/macros/relatedItems">
             show related items if they exist
         </div>
     
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
     </tal:main-macro>
 </div>
 

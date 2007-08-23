@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ARFilePreview 2.0\n"
+"POT-Creation-Date: 2007-08-23 11:28+0200\n"
+"PO-Revision-Date: 2007-08-23 11:28+0200\n"
+"Last-Translator: Jean-Charles Rogez <jean-charles.rogez@edf.fr>\n"
+"Language-Team: EDF\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-code: fr\n"
+"Language-name: French\n"
+"Preferred-encodings: latin1 utf-8\n"
+"Domain: plone\n"
+"X-Is-Fallback-For: fr-be fr-ca fr-lu fr-mc fr-ch fr-fr"
+
+msgid "full_screen"
+msgstr "Plein écran"
+
+msgid "file_asdoc"
+msgstr "Prévisualisation seule"
+
+msgid "file_preview"
+msgstr "Fichier + Prévisualisation"
+
+msgid "View File"
+msgstr "Fichier seul"
+
