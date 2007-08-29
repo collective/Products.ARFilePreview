@@ -115,8 +115,13 @@ class ToPreviewableObject( object ):
     def buildAndStorePreview(self):
         self.clearSubObjects()
         transforms = getToolByName(self.context, 'portal_transforms')
+
         file = self.context.getPrimaryField().getAccessor(self.context)()
-        data = transforms.convertTo('text/html', self.context.get_data(), filename=file.filename)
+
+        if transforms._findPath(file.content_type, 'text/html') is None:
+            data = None
+        else:
+            data = transforms.convertTo('text/html', self.context.get_data(), filename=file.filename)
         
         if data is None:
             self.setPreview(u"")

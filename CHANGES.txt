@@ -1,0 +1,5 @@
+JCR Branch
+
+- Test if a transform chain exists before building preview (zegor)
+- Plone 3.0 compatibility
+- I18n fixes - French translations
