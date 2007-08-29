@@ -123,23 +123,24 @@ class ToPreviewableObject( object ):
 
         field = self.context.getPrimaryField()
         data = self.context.getFile().data
-	if not data:
-	    return
-	def chunk2gen(chunkedData):
-	    while not chunkedData is None:
-	        yield chunkedData.data
-		chunkedData = chunkedData.next
-	def unicode2gen(Data):
-	    while (Data) > 10000:
-	        yeld Data[:10000]
-		Data = Data[10000:]
-	    yield Data
+        if not data:
+            return
+        def chunk2gen(chunkedData):
+            while not chunkedData is None:
+                yield chunkedData.data
+                chunkedData = chunkedData.next
+        def text2gen(Data):
+            while len(Data) > 10000:
+                yield Data[:10000]
+                Data = Data[10000:]
+            yield Data
         if not self.context.isBinary(field.getName()):
             data=data.decode('utf-8')
-            data=unicode2gen(data)
-	else:
-        if type(data) != type(''):
-            data = chunk2gen( data)
+            data=text2gen(data)
+        elif type(data) != type(''):
+            data = chunk2gen(data)
+        else:
+            data = text2gen(data)
         result = transforms.transform(data, field.getContentType(self.context),'text/html')
 
         if result is None:
@@ -154,15 +155,12 @@ class ToPreviewableObject( object ):
         # patch image sources since html base is that of our parent
         subobjs = result.subobjects
         for subobj in subobjs.keys():
-	    # transorm iterators to strings for subobjects
-	    # we should return the iterator, but it's not possible in sub-objects right now...
-	    self.setSubObject(subobj, ''.join(subobjs[subobj]))
-	#if len(subobjs)>0:
-        #    for id, data in subobjs.items():
-        #        self.setSubObject(id, data)
+            # transorm iterators to strings for subobjects
+            # we should return the iterator, but it's not possible in sub-objects right now...
+            self.setSubObject(subobj, ''.join(subobjs[subobj]))
         html_converted = self._re_imgsrc.sub(self._replacer(subobjs.keys(), self.context), html_converted)
         
-	#store the html in the HTMLPreview field for preview
+        #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted)
 	self.context.reindexObject()
 

@@ -39,7 +39,13 @@
 
   <subscriber
       for=".interfaces.IPreviewAware
-           zope.app.event.interfaces.IObjectModifiedEvent"
+           Products.Archetypes.interfaces.IObjectEditedEvent"
+      handler=".events.buildAndStorePreview"
+      />
+
+  <subscriber
+      for=".interfaces.IPreviewAware
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler=".events.buildAndStorePreview"
       />
 

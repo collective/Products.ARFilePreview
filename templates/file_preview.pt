@@ -1,4 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
@@ -9,27 +12,22 @@
     <tal:main-macro metal:define-macro="main" 
            tal:define="size python:here.getObjSize(here);
                        content_type here/get_content_type|here/Format;
-                      ">
-        <div metal:use-macro="here/document_actions/macros/document_actions">
-            Document actions (print, sendto etc)
-        </div>
+                       kssClassesView context/@@kss_field_decorator_view; 
+                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable">
 
-        <h1 tal:content="object_title" class="documentFirstHeading">
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+
+        <h1 metal:use-macro="here/kss_generic_macros/macros/generic_title_view">
             Title or id
         </h1>
-    
-        <div metal:use-macro="here/document_byline/macros/byline">
-          Get the byline - contains details about author and modification date.
-        </div>
 
-        <p class="documentDescription"
-           tal:content="here/Description"
-           tal:condition="here/Description">
-            Description
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+        <p metal:use-macro="here/kss_generic_macros/macros/generic_description_view">
+          Description
         </p>
-        
-        <br />
-        
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+
         <p>
             <a href=""
                tal:attributes="href here_url">
@@ -38,50 +36,50 @@
                 Click here to get the file
                 </tal:block>
             </a>
-            <small class="discreet">
-                <span i18n:translate="label_size">
-                Size
-                </span>
-                
-                <span tal:condition="size"
-                    tal:content="size">
-                257 KB
-                </span>
-        
-                <span tal:condition="size" i18n:translate="no_file_uploaded">
-                  (No file has been uploaded yet)
-                </span>
-        
-                -
-                
-                <span i18n:translate="label_file_type">
-                File type
-                </span>
-        
-                <span tal:content="content_type">
-                Content type
-                </span>
-            </small>
         </p>
+        <small class="discreet">
+            <span i18n:translate="label_size">
+            Size
+            </span>
+            
+            <span tal:condition="size"
+                tal:content="size">
+            257 KB
+            </span>
     
-        <br />
-    
+            <span tal:condition="not:size" i18n:translate="no_file_uploaded">
+              (No file has been uploaded yet)
+            </span>
+
+            -
+
+            <span i18n:translate="label_file_type">
+            File type
+            </span>
+
+            <span tal:content="content_type">
+            Content type
+            </span>
+        </small>
+
+
+        <div metal:use-macro="here/document_relateditems/macros/relatedItems">
+            show related items if they exist
+        </div>
+
         <div class="row"
              tal:condition="here/@@preview_provider/hasPreview">
-            
-            <a tal:attributes="href python:here.absolute_url()+'/@@preview_provider'"
-               style="float: right;" target="_blanc">plein écran</a>
+            <a tal:attributes="href python:here.absolute_url()+'/@@preview_full'"
+               style="float: right;" target="_blank" i18n:translate="full_screen">Full screen</a>
     
             <h2 i18n:translate="heading_file_contents">File contents</h2>
     
             <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
                   tal:content="structure here/@@preview_provider/getPreview" />
-        </div>
+        </div>   
 
-        <div metal:use-macro="here/document_relateditems/macros/relatedItems">
-            show related items if they exist
-        </div>
-    
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
     </tal:main-macro>
 </div>
 
