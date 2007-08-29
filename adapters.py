@@ -129,9 +129,16 @@ class ToPreviewableObject( object ):
 	    while not chunkedData is None:
 	        yield chunkedData.data
 		chunkedData = chunkedData.next
+	def unicode2gen(Data):
+	    while (Data) > 10000:
+	        yeld Data[:10000]
+		Data = Data[10000:]
+	    yield Data
         if not self.context.isBinary(field.getName()):
             data=data.decode('utf-8')
+            data=unicode2gen(data)
 	else:
+        if type(data) != type(''):
             data = chunk2gen( data)
         result = transforms.transform(data, field.getContentType(self.context),'text/html')
 
