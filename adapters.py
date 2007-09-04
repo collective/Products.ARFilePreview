@@ -90,7 +90,9 @@ class ToPreviewableObject( object ):
     
     def getPreview(self, mimetype="text/html"):
         data = self.annotations[self.key]['html']
-        if mimetype!="text/html" and data is not None and data != '' :
+        if (mimetype!="text/html"
+                and data is not None
+                and data != ''):
             transforms = getToolByName(self.context, 'portal_transforms')
             filename = self.context.getPrimaryField().getAccessor(self.context)().filename+".html"
             return str(transforms.convertTo(mimetype, data.encode('utf-8'), mimetype="text/html", filename = filename)).decode('utf-8')
