@@ -42,9 +42,7 @@ from zope.app.annotation.interfaces import IAnnotations
 from plone.transforms.interfaces import ITransformEngine
 
 from BTrees.OOBTree import OOBTree
-from Products.CMFCore.utils import getToolByName
 from Products.ARFilePreview.interfaces import IPreviewable
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute
 
 class ToPreviewableObject( object ):
