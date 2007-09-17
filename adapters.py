@@ -42,8 +42,34 @@ from zope.app.annotation.interfaces import IAnnotations
 from plone.transforms.interfaces import ITransformEngine
 
 from BTrees.OOBTree import OOBTree
-from Products.ARFilePreview.interfaces import IPreviewable
+from Products.Archetypes.utils import shasattr
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute
+
+from Products.ARFilePreview.interfaces import IPreviewable
+
+def chunk2gen(chunkedData):
+    while not chunkedData is None:
+        yield chunkedData.data
+        chunkedData = chunkedData.next
+
+def text2gen(Data):
+    while len(Data):
+        yield Data[:10000]
+        Data = Data[10000:]
+
+def chunk2ugen(chunkedData, charset):
+    while not chunkedData is None:
+        yield chunkedData.data.decode(charset)
+        chunkedData = chunkedData.next
+
+def text2ugen(data, charset):
+    while len(data):
+        yield data[:10000].decode(charset)
+        data = data[10000:]
+
+def unicodegen(daddygen, charset):
+    for data in daddygen:
+        yield data.decode(charset)
 
 class ToPreviewableObject( object ):
     
@@ -91,7 +117,9 @@ class ToPreviewableObject( object ):
     
     def getPreview(self, mimetype="text/html"):
         data = self.annotations[self.key]['html']
-        if mimetype!="text/html" and data is not None and data != '' :
+        if (mimetype!="text/html"
+                and data is not None
+                and data != ''):
             transforms = queryUtility(ITransformEngine)
             
             filename = self.context.getPrimaryField().getAccessor(self.context)().filename+".html"
@@ -116,33 +144,34 @@ class ToPreviewableObject( object ):
         self.annotations[self.key]['subobjects'] = OOBTree()
     
     def buildAndStorePreview(self):
+        print "Build and store preview"
         self.clearSubObjects()
         transforms = queryUtility(ITransformEngine)
 
         field = self.context.getPrimaryField()
-        data = self.context.getFile().data
-        if not data:
+        fileobj = self.context.getFile()
+        if not fileobj.data:
+            print "No file data!"
             return
-        def chunk2gen(chunkedData):
-            while not chunkedData is None:
-                yield chunkedData.data
-                chunkedData = chunkedData.next
-        def text2gen(Data):
-            while len(Data) > 10000:
-                yield Data[:10000]
-                Data = Data[10000:]
-            yield Data
-        if not self.context.isBinary(field.getName()):
-            data=data.decode('utf-8')
-            data=text2gen(data)
-        elif type(data) != type(''):
-            data = chunk2gen(data)
+        if self.context.isBinary(field.getName()):
+            if shasattr(fileobj, 'getIterator'):
+                data = fileobj.getIterator()
+            elif isinstance(fileobj.data, (str, unicode)):
+                data=text2ugen(fileobj.data, 'utf-8')
+            else:
+                data=chunk2ugen(fileobj.data, 'utf-8')
         else:
-            data = text2gen(data)
+            if shasattr(fileobj, 'getIterator'):
+                data = unicodegen(fileobj.getIterator())
+            elif isinstance(fileobj.data, (str, unicode)):
+                data = chunk2gen(fileobj.data)
+            else:
+                data = text2gen(fileobj.data)
         result = transforms.transform(data, field.getContentType(self.context),'text/html')
 
         if result is None:
             self.setPreview(u"")
+            print "No preview!"
             return
         
         #get the html code
