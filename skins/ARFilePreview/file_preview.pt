@@ -66,14 +66,16 @@
     
         <br />
     
+        <!--<div tal:replace="structure provider:plone.documentpreview" />-->
+        
         <div class="row"
              tal:condition="here/@@preview_provider/hasPreview">
             
             <a tal:attributes="href python:here.absolute_url()+'/@@preview_full'"
                style="float: right;" target="_blanc">plein écran</a>
-    
+
             <h2 i18n:translate="heading_file_contents">File contents</h2>
-    
+
             <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
                   tal:content="structure here/@@preview_provider/getPreview" />
         </div>

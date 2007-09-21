@@ -33,6 +33,7 @@ __licence__ = 'GPL'
 
 from zope.interface import Interface
 from zope.app.event.interfaces import IObjectModifiedEvent
+from zope.viewlet.interfaces import IViewletManager
 
 
 class IPreviewAware( Interface ):
@@ -76,3 +77,8 @@ class IPreviewProvider( Interface ):
         """
         update all the previews reachable from the catalog
         """
+
+
+class IDocumentPreview(IViewletManager):
+    """A viewlet manager that sits after the content body
+    """

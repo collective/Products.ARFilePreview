@@ -157,16 +157,16 @@ class ToPreviewableObject( object ):
             if shasattr(fileobj, 'getIterator'):
                 data = fileobj.getIterator()
             elif isinstance(fileobj.data, (str, unicode)):
-                data=text2ugen(fileobj.data, 'utf-8')
+                data=text2gen(fileobj.data)
             else:
-                data=chunk2ugen(fileobj.data, 'utf-8')
+                data=chunk2gen(fileobj.data)
         else:
             if shasattr(fileobj, 'getIterator'):
                 data = unicodegen(fileobj.getIterator())
             elif isinstance(fileobj.data, (str, unicode)):
-                data = chunk2gen(fileobj.data)
+                data = chunk2ugen(fileobj.data, 'utf-8')
             else:
-                data = text2gen(fileobj.data)
+                data = text2ugen(fileobj.data, 'utf-8')
         result = transforms.transform(data, field.getContentType(self.context),'text/html')
 
         if result is None:
