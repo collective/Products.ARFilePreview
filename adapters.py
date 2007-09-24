@@ -119,9 +119,9 @@ class ToPreviewableObject( object ):
         file = self.context.getPrimaryField().getAccessor(self.context)()
 
         if transforms._findPath(file.content_type, 'text/html') is None:
-            data = None
+            result = None
         else:
-            data = transforms.convertTo('text/html', self.context.get_data(), filename=file.filename)
+            result = transforms.convertTo('text/html', self.context.get_data(), filename=file.filename)
             
         if result is None:
             print "\ttransform failed!"
