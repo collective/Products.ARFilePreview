@@ -37,5 +37,6 @@ from Products.ARFilePreview.interfaces import IPreviewable
 
 def buildAndStorePreview(obj, event):
     """ """
-    print "BUILD AND STORE PREVIEW %s" % ( obj.getPhysicalPath() , )
+    #print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),
+    #                                            event)
     IPreviewable(obj).buildAndStorePreview()
