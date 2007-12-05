@@ -1,3 +1,7 @@
+  ARFilePreview 2.3 for Plone 3.0 +
+  using plone.transforms 
+  (if you want to use portal_transforms, use version 2.2.x)
+
   ARFilePreview is built on Plone Content Management System, 
   the Content Management Framework (CMF) and the Zope Application Server.
   ARFilePreview is copyright 2006 atReal.
