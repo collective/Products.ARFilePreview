@@ -145,6 +145,8 @@ class ToPreviewableObject( object ):
     
     def buildAndStorePreview(self):
         print "Build and store preview"
+        if not getattr(self.context, 'isPreviewable', True):
+            return
         self.clearSubObjects()
         transforms = queryUtility(ITransformEngine)
 
