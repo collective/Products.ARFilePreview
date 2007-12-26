@@ -34,10 +34,10 @@ import re
 from DateTime import DateTime
 
 from zope.interface import implements
-from zope.component.exceptions import ComponentLookupError
+from zope.component.interfaces import ComponentLookupError
 from zope.component import queryUtility
-from zope.app.traversing.adapters import Traverser
-from zope.app.annotation.interfaces import IAnnotations
+from zope.traversing.adapters import Traverser
+from zope.annotation.interfaces import IAnnotations
 
 from plone.transforms.interfaces import ITransformEngine
 
