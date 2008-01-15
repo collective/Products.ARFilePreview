@@ -73,6 +73,12 @@ class IPreviewProvider( Interface ):
         update the preview by retransforming original file and store it
         """
     
+    def updatePreviewOnDemand( ):
+        """
+        update the preview by retransforming original file and store it,
+        the redirect to the object.
+        """
+    
     def updateAllPreviews( ):
         """
         update all the previews reachable from the catalog

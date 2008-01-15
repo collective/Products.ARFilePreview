@@ -67,16 +67,28 @@
             show related items if they exist
         </div>
 
-        <div class="row"
-             tal:condition="here/@@preview_provider/hasPreview">
+        <fieldset id="preview" class="block"
+                  i18n:domain=""
+            tal:condition="here/@@preview_provider/hasPreview">
+          <legend class="collapsibleHeader" style="font-weight: bold">
+            <tal:trs i18n:translate="preview">
+            Preview
+            </tal:trs>
+            : (
             <a tal:attributes="href python:here.absolute_url()+'/@@preview_provider'"
-               style="float: right;" target="_blank" i18n:translate="full_screen">Full screen</a>
-    
-            <h2 i18n:translate="heading_file_contents">File contents</h2>
+               target="_blank" i18n:translate="full_screen">Full screen</a>
+            -
+            <a i18n:translate="refresh"
+               tal:attributes="href python:context.id + '/@@preview_provider/updatePreviewOnDemand'">
+                Refresh
+            </a> )
+          </legend>
+            
+            <!--<h2 i18n:translate="heading_file_contents">File contents</h2>-->
     
             <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
                   tal:content="structure here/@@preview_provider/getPreview" />
-        </div>   
+        </fieldset>
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
 

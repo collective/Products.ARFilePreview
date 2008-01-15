@@ -73,6 +73,12 @@ class PreviewProvider( BrowserView ):
         """
         self.object.buildAndStorePreview()
     
+    def updatePreviewOnDemand(self):
+        """
+        """
+        self.object.buildAndStorePreview()
+        self.request.response.redirect(self.context.absolute_url()+'/view')
+
 
     ## XXX This should NOT be here !!
     ## but I wanted the feature badly...

@@ -71,9 +71,13 @@
         <div class="row"
              tal:condition="here/@@preview_provider/hasPreview">
             
-            <a tal:attributes="href python:here.absolute_url()+'/@@preview_full'"
-               style="float: right;" target="_blanc">plein écran</a>
-
+            <a i18n:translate="full_screen"
+               tal:attributes="href python:here.absolute_url()+'/@@preview_full'"
+               style="float: right;" target="_blanc">Full screen</a> - 
+            <a i18n:translate="refresh"
+               tal:attributes="href python:context.id + '/@@preview_provider/updatePreviewOnDemand'">
+                Refresh
+            </a>
             <h2 i18n:translate="heading_file_contents">File contents</h2>
 
             <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
