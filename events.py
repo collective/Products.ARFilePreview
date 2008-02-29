@@ -39,4 +39,6 @@ def buildAndStorePreview(obj, event):
     """ """
     #print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),
     #                                            event)
+    if getattr(obj, 'isPreviewable', "always") != "always":
+        return
     IPreviewable(obj).buildAndStorePreview()

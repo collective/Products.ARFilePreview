@@ -145,7 +145,7 @@ class ToPreviewableObject( object ):
     
     def buildAndStorePreview(self):
         print "Build and store preview"
-        if not getattr(self.context, 'isPreviewable', True):
+        if getattr(self.context, 'isPreviewable', "always") == "never":
             self.setPreview(u'')
             return
         self.clearSubObjects()
