@@ -86,13 +86,14 @@ class PreviewProvider( BrowserView ):
         """
         """
         pc = self.context.portal_catalog
-        brains = pc(portal_type='File')
+        #brains = pc(portal_type='File')
+        brains = pc(object_provides="Products.ARFilePreview.interfaces.IPreviewAware")
         status=""
         for brain in brains:
             status+="<div>"+brain.getPath()
             try:
                 obj=brain.getObject()
-                IPreviewable(obj).buildAndStorePreview()
+                IPreviewable(obj).refreshPreview()
                 obj.reindexObject()
             except Exception, e:
                 status+=" %s %s</div>" % (str(e.__class__.__name__), str(e))

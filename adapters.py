@@ -31,6 +31,7 @@ __docformat__ = 'plaintext'
 __licence__ = 'GPL'
 
 import re
+import time
 from DateTime import DateTime
 
 from zope.interface import implements
@@ -107,6 +108,10 @@ class ToPreviewableObject( object ):
             self.annotations[self.key]['html'] = ""
         if not self.annotations[self.key].get('subobjects', None):
             self.annotations[self.key]['subobjects'] = OOBTree()
+        if not self.annotations[self.key].get('lastFileChange', None):
+            self.annotations[self.key]['lastFileChange'] = 0
+        if not self.annotations[self.key].get('lastPreviewUpdate', None):
+            self.annotations[self.key]['lastPreviewUpdate'] = 0
     
     def hasPreview(self):
         return bool(len(self.annotations[self.key]['html']))
@@ -147,7 +152,7 @@ class ToPreviewableObject( object ):
         print "Build and store preview"
         if getattr(self.context, 'isPreviewable', "always") == "never":
             self.setPreview(u'')
-            return
+            return False
         self.clearSubObjects()
         transforms = queryUtility(ITransformEngine)
 
@@ -155,7 +160,10 @@ class ToPreviewableObject( object ):
         fileobj = self.context.getFile()
         if not fileobj.data:
             print "No file data!"
-            return
+            return False
+        
+        self.annotations[self.key]['lastPreviewUpdate'] = time.time()
+        
         if self.context.isBinary(field.getName()):
             if shasattr(fileobj, 'getIterator'):
                 data = fileobj.getIterator()
@@ -175,7 +183,7 @@ class ToPreviewableObject( object ):
         if result is None:
             self.setPreview(u"")
             print "No preview!"
-            return
+            return False
         
         #get the html code
         html_converted = u''.join(result.data)
@@ -192,7 +200,16 @@ class ToPreviewableObject( object ):
         
         #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted)
-	self.context.reindexObject()
+        self.context.reindexObject()
+        return True
+    
+    def fileModified(self):
+        self.annotations[self.key]['lastFileChange'] = time.time()
+        
+    def refreshPreview(self):
+        if self.annotations[self.key]['lastFileChange'] > self.annotations[self.key]['lastPreviewUpdate']:
+            return self.buildAndStorePreview()
+        return False
 
 def previewIndexWrapper(object, portal, **kwargs):
     data = object.SearchableText()

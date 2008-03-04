@@ -83,7 +83,7 @@ class IPreviewProvider( Interface ):
         """
         update all the previews reachable from the catalog
         """
-
+    
 
 class IDocumentPreview(IViewletManager):
     """A viewlet manager that sits after the content body

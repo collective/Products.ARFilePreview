@@ -39,6 +39,12 @@ def buildAndStorePreview(obj, event):
     """ """
     #print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),
     #                                            event)
-    if getattr(obj, 'isPreviewable', "always") != "always":
+    form = obj.REQUEST.form
+    if form.get('file_delete', 'nochange') == "nochange":
         return
-    IPreviewable(obj).buildAndStorePreview()
+    
+    previewable = IPreviewable(obj)
+    previewable.fileModified()
+    
+    if getattr(obj, 'isPreviewable', "always") == "always":
+        previewable.buildAndStorePreview()
