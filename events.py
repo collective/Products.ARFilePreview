@@ -45,6 +45,5 @@ def buildAndStorePreview(obj, event):
     
     previewable = IPreviewable(obj)
     previewable.fileModified()
-    
     if getattr(obj, 'isPreviewable', "always") == "always":
         previewable.buildAndStorePreview()
