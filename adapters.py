@@ -207,7 +207,7 @@ class ToPreviewableObject( object ):
         self.annotations[self.key]['lastFileChange'] = time.time()
         
     def refreshPreview(self):
-        if self.annotations[self.key]['lastFileChange'] > self.annotations[self.key]['lastPreviewUpdate']:
+        if self.annotations[self.key]['lastFileChange'] >= self.annotations[self.key]['lastPreviewUpdate']:
             return self.buildAndStorePreview()
         return False
 
