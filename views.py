@@ -49,6 +49,9 @@ from Products.ARFilePreview.interfaces import IPreviewProvider
 from Products.Archetypes.BaseObject import Wrapper
 
 import transaction
+import logging
+
+logger = logging.getLogger('UpdateAllPreviewsLog')
 
 class PreviewProvider( BrowserView ):
 
@@ -92,15 +95,19 @@ class PreviewProvider( BrowserView ):
         status=""
         for brain in brains:
             status+="<div>"+brain.getPath()
+            logger.log(logging.INFO, brain.getPath())
             try:
                 obj=brain.getObject()
                 IPreviewable(obj).refreshPreview()
                 obj.reindexObject()
                 transaction.commit()
             except Exception, e:
-                status+=" %s %s</div>" % (str(e.__class__.__name__), str(e))
+                msg = " %s %s</div>" % (str(e.__class__.__name__), str(e))
+                status+=msg
+                logger.log(logging.ERROR, msg)
             else:
                 status+=" OK</div>\n"
+                logger.log(logging.INFO, "OK")
         return status
 
 
