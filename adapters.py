@@ -59,9 +59,7 @@ def text2gen(Data):
         Data = Data[10000:]
 
 def chunk2ugen(chunkedData, charset):
-    while not chunkedData is None:
-        yield chunkedData.data.decode(charset)
-        chunkedData = chunkedData.next
+    yield chunkedData.decode(charset)
 
 def text2ugen(data, charset):
     while len(data):

@@ -48,6 +48,7 @@ from Products.ARFilePreview.interfaces import IPreviewable
 from Products.ARFilePreview.interfaces import IPreviewProvider
 from Products.Archetypes.BaseObject import Wrapper
 
+import transaction
 
 class PreviewProvider( BrowserView ):
 
@@ -95,6 +96,7 @@ class PreviewProvider( BrowserView ):
                 obj=brain.getObject()
                 IPreviewable(obj).refreshPreview()
                 obj.reindexObject()
+                transaction.commit()
             except Exception, e:
                 status+=" %s %s</div>" % (str(e.__class__.__name__), str(e))
             else:
