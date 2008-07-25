@@ -91,7 +91,7 @@ class PreviewProvider( BrowserView ):
         """
         pc = self.context.portal_catalog
         #brains = pc(portal_type='File')
-        brains = pc(object_provides="Products.ARFilePreview.interfaces.IPreviewAware")
+        brains = pc(object_provides="Products.ARFilePreview.interfaces.IPreviewAware",sort_on='modified',sort_order='reverse')
         status=""
         for brain in brains:
             status+="<div>"+brain.getPath()
@@ -105,6 +105,7 @@ class PreviewProvider( BrowserView ):
                 msg = " %s %s</div>" % (str(e.__class__.__name__), str(e))
                 status+=msg
                 logger.log(logging.ERROR, msg)
+                transaction.commit()
             else:
                 status+=" OK</div>\n"
                 logger.log(logging.INFO, "OK")
