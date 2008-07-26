@@ -160,8 +160,6 @@ class ToPreviewableObject( object ):
             print "No file data!"
             return False
         
-        self.annotations[self.key]['lastPreviewUpdate'] = time.time()
-        
         if self.context.isBinary(field.getName()):
             if shasattr(fileobj, 'getIterator'):
                 data = fileobj.getIterator()
@@ -198,6 +196,7 @@ class ToPreviewableObject( object ):
         
         #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted)
+        self.annotations[self.key]['lastPreviewUpdate'] = time.time()
         self.context.reindexObject()
         return True
     
