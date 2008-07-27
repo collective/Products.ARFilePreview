@@ -84,7 +84,11 @@ class IPreviewProvider( Interface ):
         update all the previews reachable from the catalog
         """
     
-
+    def updateNewPreviews( ):
+        """
+        update the previews reachable from the catalog, for new files only
+        """
+    
 class IDocumentPreview(IViewletManager):
     """A viewlet manager that sits after the content body
     """

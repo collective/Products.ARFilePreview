@@ -130,7 +130,7 @@ class ToPreviewableObject( object ):
             if result is not None :
                 return u''.join(result.data)
         return data
-    
+
     def setSubObject(self, name, data):
         mtr = self.context.mimetypes_registry
         mime = mtr.classify(data, filename=name)
@@ -149,6 +149,7 @@ class ToPreviewableObject( object ):
     def buildAndStorePreview(self):
         print "Build and store preview"
         if getattr(self.context, 'isPreviewable', "always") == "never":
+            self.clearSubObjects()
             self.setPreview(u'')
             return False
         self.clearSubObjects()
@@ -182,6 +183,7 @@ class ToPreviewableObject( object ):
             return False
         
         #get the html code
+        #XXX load all the html in memory.... We should have an iterator here, if possible
         html_converted = u''.join(result.data)
         #update internal links
         #remove bad character '\xef\x81\xac' from HTMLPreview
@@ -201,12 +203,16 @@ class ToPreviewableObject( object ):
         return True
     
     def fileModified(self):
+        """
+        File has been modified ; store this date for further comparizon
+        """
         self.annotations[self.key]['lastFileChange'] = time.time()
-        
-    def refreshPreview(self):
-        if self.annotations[self.key]['lastFileChange'] >= self.annotations[self.key]['lastPreviewUpdate']:
-            return self.buildAndStorePreview()
-        return False
+    
+    def updatePreview(self):
+        """
+        Update the preview
+        """
+        return self.buildAndStorePreview()
 
 def previewIndexWrapper(object, portal, **kwargs):
     data = object.SearchableText()
@@ -218,4 +224,14 @@ def previewIndexWrapper(object, portal, **kwargs):
         # The catalog expects AttributeErrors when a value can't be found
         return data
 
+def lastPreviewUpdate(object, portal, **kwargs):
+    obj=IPreviewable(object)
+    return obj.annotations[obj.key]['lastPreviewUpdate']
+
+def lastFileChange(object, portal, **kwargs):
+    obj=IPreviewable(object)
+    return obj.annotations[obj.key]['lastFileChange']
+
 registerIndexableAttribute('SearchableText', previewIndexWrapper)
+registerIndexableAttribute('lastPreviewUpdate', lastPreviewUpdate)
+registerIndexableAttribute('lastFileChange', lastFileChange)

@@ -78,10 +78,10 @@
                tal:attributes="href python:context.id + '/@@preview_provider/updatePreviewOnDemand'">
                 Refresh
             </a>
-            <h2 i18n:translate="heading_file_contents">File contents</h2>
+            <!--h2 i18n:translate="heading_file_contents">File contents</h2>
 
             <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
-                  tal:content="structure here/@@preview_provider/getPreview" />
+                  tal:content="structure here/@@preview_provider/getPreview" /-->
         </div>
 
         <div metal:use-macro="here/document_relateditems/macros/relatedItems">

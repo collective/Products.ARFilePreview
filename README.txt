@@ -1,10 +1,10 @@
-  ARFilePreview 2.3 for Plone 3.0 +
+  ARFilePreview 3.x for Plone 3.0 +
   using plone.transforms 
   (if you want to use portal_transforms, use version 2.2.x)
 
   ARFilePreview is built on Plone Content Management System, 
   the Content Management Framework (CMF) and the Zope Application Server.
-  ARFilePreview is copyright 2006 atReal.
+  ARFilePreview is copyright 2006-2008 atReal.
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -48,10 +48,12 @@ Contributors:
 
 o Balazs REE - Greenfinity <ree AT ree.hu>
 o Jean-Charles ROGEZ - EDF
+o Souheil Shelfou - trollfot - <souheil@shelfou.org> : inspiration from StructuredDocument (take a look ;) )
 
 Sponsors:
-INSERM DSI - http://www.inserm.fr
-SCET - http://www.scet.fr
-VILLE DE SAVIGNY-SUR-ORGE - http://www.savigny.org
-VILLE D'ISTRES - http://www.istres.fr
+o INSERM DSI - http://www.inserm.fr
+o SCET - http://www.scet.fr
+o VILLE DE SAVIGNY-SUR-ORGE - http://www.savigny.org
+o VILLE D'ISTRES - http://www.istres.fr
+o CG48 - http://www.lozere.fr
 
