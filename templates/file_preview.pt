@@ -30,7 +30,7 @@
 
         <p>
             <a href=""
-               tal:attributes="href here_url">
+               tal:attributes="href python:here_url+'/at_download/file'">
                 <img src="" tal:define="icon python:here.getIcon(1)" tal:attributes="src string:${portal_url}/${icon}" alt="" />
                 <tal:block i18n:translate="label_click_to_get_file">
                 Click here to get the file
@@ -67,28 +67,26 @@
             show related items if they exist
         </div>
 
-        <fieldset id="preview" class="block"
+        <!--fieldset id="preview" class="block"
                   i18n:domain=""
-            tal:condition="here/@@preview_provider/hasPreview">
-          <legend class="collapsibleHeader" style="font-weight: bold">
-            <tal:trs i18n:translate="preview">
-            Preview
-            </tal:trs>
-            : (
+            tal:condition="here/@@preview_provider/hasPreview"-->
+          <!--legend class="collapsibleHeader" style="font-weight: bold"-->
+        <div i18n:domain="" tal:condition="here/@@preview_provider/hasPreview"> 
             <a tal:attributes="href python:here.absolute_url()+'/@@preview_provider'"
-               target="_blank" i18n:translate="full_screen">Full screen</a>
+               target="_blank" i18n:translate="preview">Preview </a>
             -
             <a i18n:translate="refresh"
                tal:attributes="href python:context.id + '/@@preview_provider/updatePreviewOnDemand'">
                 Refresh
-            </a> )
-          </legend>
+            </a>
+        </div>
+          <!--/legend-->
             
             <!--<h2 i18n:translate="heading_file_contents">File contents</h2>-->
     
-            <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
-                  tal:content="structure here/@@preview_provider/getPreview" />
-        </fieldset>
+            <!--div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
+                  tal:content="structure here/@@preview_provider/getPreview" /-->
+        <!--/fieldset-->
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
 

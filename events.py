@@ -37,8 +37,7 @@ from Products.ARFilePreview.interfaces import IPreviewable
 
 def buildAndStorePreview(obj, event):
     """ """
-    #print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),
-    #                                            event)
+    print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),event)
     form = obj.REQUEST.form
     if form.get('file_delete', 'nochange') == "nochange":
         return
