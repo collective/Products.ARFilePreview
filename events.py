@@ -26,23 +26,34 @@
 $Id$
 """
 
-__author__ = """Jean-Nicolas Bès <contact@atreal.net>"""
+__author__ = u"""Jean-Nicolas Bès <contact@atreal.net>"""
 __docformat__ = 'plaintext'
 __licence__ = 'GPL'
 
 from Acquisition import aq_base
 
 from Products.ARFilePreview.interfaces import IPreviewable
-
+import logging
 
 def buildAndStorePreview(obj, event):
-    """ """
-    print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),event)
+    u"""
+    We get a buildAndStorePreview request.
+    Let's check wether we have to do it or not, depending on options
+    and test wether file has been modified or not.
+    If this is ok, call the adapter's method buildAndStorePreview.
+    """
+    logger = logging.getLogger('buildAndStorePreview')
+    #print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),event)
     form = obj.REQUEST.form
-    if form.get('file_delete', 'nochange') == "nochange":
+    if form.get('file_delete', 'changed') == "nochange":
+        msg = "File on object %s has not changed ; no new preview" %( obj.getPhysicalPath())
+        logger.log(logging.INFO, msg)
         return
     
     previewable = IPreviewable(obj)
     previewable.fileModified()
-    if getattr(obj, 'isPreviewable', "always") == "always":
+    isPreviewable = getattr(obj, 'isPreviewable', "always")
+    if isPreviewable == "always":
         previewable.buildAndStorePreview()
+    else:
+        msg = "File's preview option is %s ; no new preview for %s " %( isPreviewable, obj.getPhysicalPath())  

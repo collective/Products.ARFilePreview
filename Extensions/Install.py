@@ -31,9 +31,15 @@ __docformat__ = 'plaintext'
 __licence__ = 'GPL'
 
 
+import transaction
+from Products.CMFCore.utils import getToolByName
 from StringIO import StringIO
 from Products.ARFilePreview.config    import *
 from Products.Archetypes.Extensions.utils import install_subskin
+
+PRODUCT_DEPENDENCIES = tuple()
+EXTENSION_PROFILES = ('Products.ARFilePreview:default',)
+UNINSTALL_PROFILES = tuple()
 
 def install(self):
     """
@@ -45,8 +51,32 @@ def install(self):
     pt['File'].immediate_view = "file_preview"
     pt['File'].view_methods += ("file_preview", "file_asdoc")
     install_subskin(self, out, GLOBALS)
+
+    portal_quickinstaller = getToolByName(self, 'portal_quickinstaller')
+    portal_setup = getToolByName(self, 'portal_setup')
+
+    for product in PRODUCT_DEPENDENCIES:
+        is_installed = portal_quickinstaller.isProductInstalled(product)
+        
+        if reinstall and is_installed:
+            portal_quickinstaller.reinstallProducts([product])
+            transaction.savepoint()
+            
+        elif not is_installed:
+            portal_quickinstaller.installProduct(product)
+            transaction.savepoint()
+        
+    for extension_id in EXTENSION_PROFILES:
+        portal_setup.runAllImportStepsFromProfile('profile-%s' % extension_id,
+                                                  purge_old=False)
+        product_name = extension_id.split(':')[0]
+        portal_quickinstaller.notifyInstalled(product_name)
+        transaction.savepoint()
+
     print "installed ARFilePreview"
-    return out.getvalue()
+
+    return "%s \nRan all install steps for." % out.getvalue()
+
 
 
 def uninstall(self):
@@ -60,4 +90,11 @@ def uninstall(self):
             continue
         avViews.append(view)
     pt['File'].view_methods = tuple(avViews)
-    return out.getvalue()
+    portal_setup = getToolByName(self, 'portal_setup')
+    for extension_id in UNINSTALL_PROFILES:
+        portal_setup.runAllImportStepsFromProfile('profile-%s' % extension_id,
+                                                  purge_old=False)
+        transaction.savepoint()
+        
+    return "%s \nRan all uninstall steps for." % out.getvalue()
+

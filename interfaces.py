@@ -55,7 +55,8 @@ class IPreviewable( Interface ):
         """
         Get the preview
         """
-   
+        
+
 class IPreviewProvider( Interface ):
     
     def hasPreview( ):
@@ -67,7 +68,7 @@ class IPreviewProvider( Interface ):
         """
         Get the preview
         """
-        
+    
     def updatePreview( ):
         """
         update the preview by retransforming original file and store it
@@ -84,7 +85,11 @@ class IPreviewProvider( Interface ):
         update all the previews reachable from the catalog
         """
     
-
+    def updateNewPreviews( ):
+        """
+        update the previews reachable from the catalog, for new files only
+        """
+    
 class IDocumentPreview(IViewletManager):
     """A viewlet manager that sits after the content body
     """
