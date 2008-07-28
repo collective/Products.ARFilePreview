@@ -227,14 +227,13 @@ def previewIndexWrapper(object, portal, **kwargs):
 
 def lastPreviewUpdate(object, portal, **kwargs):
     if IPreviewAware.providedBy(object):
-        obj=IPreviewable(object)
-        lastPreviewUpdate = obj.annotations[obj.key]['lastPreviewUpdate']
-        return lastPreviewUpdate
+        obj=IAnnotations(object)
+        return obj['htmlpreview']['lastPreviewUpdate']
 
 def lastFileChange(object, portal, **kwargs):
     if IPreviewAware.providedBy(object):
-        obj=IPreviewable(object)
-        return obj.annotations[obj.key]['lastFileChange']
+        obj=IAnnotations(object)
+        return obj['htmlpreview']['lastFileChange']
 
 
 registerIndexableAttribute('SearchableText', previewIndexWrapper)
