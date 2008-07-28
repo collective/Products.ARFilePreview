@@ -47,6 +47,7 @@ from Products.Archetypes.utils import shasattr
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute
 
 from Products.ARFilePreview.interfaces import IPreviewable
+from Products.ARFilePreview.interfaces import IPreviewAware
 
 def chunk2gen(chunkedData):
     while not chunkedData is None:
@@ -225,19 +226,16 @@ def previewIndexWrapper(object, portal, **kwargs):
         return data
 
 def lastPreviewUpdate(object, portal, **kwargs):
-    try:
+    if IPreviewAware.providedBy(object):
         obj=IPreviewable(object)
         lastPreviewUpdate = obj.annotations[obj.key]['lastPreviewUpdate']
-	return lastPreviewUpdate
-    except:
-        return
+        return lastPreviewUpdate
 
 def lastFileChange(object, portal, **kwargs):
-    try:
+    if IPreviewAware.providedBy(object):
         obj=IPreviewable(object)
         return obj.annotations[obj.key]['lastFileChange']
-    except:
-        return
+
 
 registerIndexableAttribute('SearchableText', previewIndexWrapper)
 registerIndexableAttribute('lastPreviewUpdate', lastPreviewUpdate)
