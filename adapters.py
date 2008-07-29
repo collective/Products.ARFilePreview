@@ -49,6 +49,8 @@ from Products.CMFPlone.CatalogTool import registerIndexableAttribute
 from Products.ARFilePreview.interfaces import IPreviewable
 from Products.ARFilePreview.interfaces import IPreviewAware
 
+_marker = object()
+
 def chunk2gen(chunkedData):
     while not chunkedData is None:
         yield chunkedData.data
