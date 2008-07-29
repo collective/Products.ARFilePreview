@@ -93,7 +93,7 @@ class PreviewProvider( BrowserView ):
         logger = logging.getLogger('UpdateAllPreviewsLog')
         pc = self.context.portal_catalog
         #brains = pc(portal_type='File')
-        brains = pc(object_provides="Products.ARFilePreview.interfaces.IPreviewAware",sort_on='id',sort_order='reverse')
+        brains = pc(object_provides="Products.ARFilePreview.interfaces.IPreviewAware",sort_on='modified',sort_order='reverse')
         status=""
         for brain in brains:
             if updateNewOnly and ( brain.lastFileChange < brain.lastPreviewUpdate ):
