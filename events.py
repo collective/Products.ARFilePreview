@@ -30,12 +30,19 @@ __author__ = """Jean-Nicolas Bès <contact@atreal.net>"""
 __docformat__ = 'plaintext'
 __licence__ = 'GPL'
 
-from Acquisition import aq_base
+from zope.component import getUtility
+from Products.CMFCore.interfaces import ISiteRoot
 
+from Products.ARFilePreview.config import PROJECTNAME
 from Products.ARFilePreview.interfaces import IPreviewable
 
 
 def buildAndStorePreview(obj, event):
     """ """
-    print "BUILD AND STORE PREVIEW %s" % ( obj.getPhysicalPath() , )
-    IPreviewable(obj).buildAndStorePreview()
+
+    site = getUtility(ISiteRoot)
+    qi = site.portal_quickinstaller
+    if qi.isProductInstalled(PROJECTNAME):
+        print "BUILD AND STORE PREVIEW %s" % ( obj.getPhysicalPath() , )
+        IPreviewable(obj).buildAndStorePreview()
+    return
