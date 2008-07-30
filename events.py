@@ -46,7 +46,8 @@ def buildAndStorePreview(obj, event):
     #print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),event)
     form = obj.REQUEST.form
     if form.get('file_delete', 'changed') == "nochange":
-        msg = "File on object %s has not changed ; no new preview" %( obj.getPhysicalPath())
+        msg = ("File field of %s has not changed"
+              ": no preview computation" % "/".join(obj.getPhysicalPath()))
         logger.log(logging.INFO, msg)
         return
     
@@ -56,4 +57,6 @@ def buildAndStorePreview(obj, event):
     if isPreviewable == "always":
         previewable.buildAndStorePreview()
     else:
-        msg = "File's preview option is %s ; no new preview for %s " %( isPreviewable, obj.getPhysicalPath())  
+        msg = ("File's preview option is %s"
+              ": no new preview for %s " % (isPreviewable,
+                                            "/".join(obj.getPhysicalPath())))

@@ -217,6 +217,8 @@ class ToPreviewableObject( object ):
         """
         return self.buildAndStorePreview()
 
+_marker = object()
+
 def previewIndexWrapper(object, portal, **kwargs):
     data = object.SearchableText()
     try:
