@@ -1,53 +1,74 @@
 <configure xmlns="http://namespaces.zope.org/zope"
-	   xmlns:browser="http://namespaces.zope.org/browser"
-	   xmlns:five="http://namespaces.zope.org/five">
+            xmlns:browser="http://namespaces.zope.org/browser"
+            xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+            xmlns:five="http://namespaces.zope.org/five">
 
-  <include package="zope.annotation" />
-
-
-  <five:implements class="Products.ATContentTypes.content.file.ATFile"
-	      interface=".interfaces.IPreviewAware
-                         zope.annotation.interfaces.IAttributeAnnotatable" />
-
-  <adapter for=".interfaces.IPreviewAware"
-	   factory=".adapters.ToPreviewableObject"
-	   provides=".interfaces.IPreviewable" />
-
-  <browser:page
-      for=".interfaces.IPreviewAware"
-      name="preview_provider"
-      class=".views.PreviewProvider"
-      permission="zope2.View"
-      allowed_interface=".interfaces.IPreviewProvider"
-      template="templates/fullview.pt"
-      />
+    <include package="zope.annotation" />
+    
+    
+    <five:implements
+        class="Products.ATContentTypes.content.file.ATFile"
+        interface=".interfaces.IPreviewAware
+                   zope.annotation.interfaces.IAttributeAnnotatable"
+        />
+    
+    <adapter for=".interfaces.IPreviewAware"
+             factory=".adapters.ToPreviewableObject"
+             provides=".interfaces.IPreviewable"
+        />
+    
+    <browser:page
+        for=".interfaces.IPreviewAware"
+        name="preview_provider"
+        class=".views.PreviewProvider"
+        permission="zope2.View"
+        allowed_interface=".interfaces.IPreviewProvider"
+        template="templates/fullview.pt"
+        />
+    
+    <browser:page
+        for=".interfaces.IPreviewAware"
+        name="file_asdoc"
+        template="templates/file_asdoc.pt"
+        permission="zope2.View"
+        />
+    
+    
+    <browser:page
+        for=".interfaces.IPreviewAware"
+        name="file_preview"
+        template="templates/file_preview.pt"
+        permission="zope2.View"
+        />
   
-  <browser:page
-      for=".interfaces.IPreviewAware"
-      name="file_asdoc"
-      template="templates/file_asdoc.pt"
-      permission="zope2.View"
-      />
+  
+  
+    <!--<browser:viewlet-->
+    <!--    name="plone.abovecontentbody.filepreview"-->
+    <!--    for=".interfaces.IPreviewAware"-->
+    <!--    manager="plone.app.layout.viewlets.interfaces.IAboveContentBody"-->
+    <!--    class=".viewlet.PreviewViewlet"-->
+    <!--    permission="zope2.View"-->
+    <!--    />-->
+    
+    <subscriber
+        for=".interfaces.IPreviewAware
+            zope.lifecycleevent.ObjectModifiedEvent"
+        handler=".events.buildAndStorePreview"
+        />
+    
+    <subscriber
+        for=".interfaces.IPreviewAware
+             Products.Archetypes.interfaces.IObjectInitializedEvent"
+        handler=".events.buildAndStorePreview"
+        />
 
-
-  <browser:page
-      for=".interfaces.IPreviewAware"
-      name="file_preview"
-      template="templates/file_preview.pt"
-      permission="zope2.View"
-      />
-
-  <subscriber
-      for=".interfaces.IPreviewAware
-           Products.Archetypes.interfaces.IObjectEditedEvent"
-      handler=".events.buildAndStorePreview"
-      />
-
-  <subscriber
-      for=".interfaces.IPreviewAware
-           Products.Archetypes.interfaces.IObjectInitializedEvent"
-      handler=".events.buildAndStorePreview"
-      />
-
+    <genericsetup:registerProfile
+        name="default"
+        title="ARFilePreview profile"
+        directory="profiles/default"
+        description="Extension profile for ARFilePreview functionality."
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
 </configure>
 

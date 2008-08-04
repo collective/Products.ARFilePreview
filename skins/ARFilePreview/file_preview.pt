@@ -32,7 +32,7 @@
         
         <p>
             <a href=""
-               tal:attributes="href here_url">
+               tal:attributes="href python:here_url+'/at_download/file'">
                 <img src="" tal:define="icon python:here.getIcon(1)" tal:attributes="src string:${portal_url}/${icon}" alt="" />
                 <tal:block i18n:translate="label_click_to_get_file">
                 Click here to get the file
@@ -66,16 +66,22 @@
     
         <br />
     
+        <!--<div tal:replace="structure provider:plone.documentpreview" />-->
+        
         <div class="row"
              tal:condition="here/@@preview_provider/hasPreview">
             
-            <a tal:attributes="href python:here.absolute_url()+'/@@preview_full'"
-               style="float: right;" target="_blanc">plein écran</a>
-    
-            <h2 i18n:translate="heading_file_contents">File contents</h2>
-    
+            <a i18n:translate="full_screen"
+               tal:attributes="href python:here.absolute_url()+'/@@preview_full'"
+               style="float: right;" target="_blanc">Full screen</a> - 
+            <a i18n:translate="refresh"
+               tal:attributes="href python:context.id + '/@@preview_provider/updatePreviewOnDemand'">
+                Refresh
+            </a>
+            <!--h2 i18n:translate="heading_file_contents">File contents</h2>
+
             <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
-                  tal:content="structure here/@@preview_provider/getPreview" />
+                  tal:content="structure here/@@preview_provider/getPreview" /-->
         </div>
 
         <div metal:use-macro="here/document_relateditems/macros/relatedItems">

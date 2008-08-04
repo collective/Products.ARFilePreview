@@ -30,19 +30,38 @@ __author__ = """Jean-Nicolas Bès <contact@atreal.net>"""
 __docformat__ = 'plaintext'
 __licence__ = 'GPL'
 
-from zope.component import getUtility
-from Products.CMFCore.interfaces import ISiteRoot
+from Acquisition import aq_base
 
-from Products.ARFilePreview.config import PROJECTNAME
 from Products.ARFilePreview.interfaces import IPreviewable
-
+import logging
 
 def buildAndStorePreview(obj, event):
-    """ """
-
-    site = getUtility(ISiteRoot)
-    qi = site.portal_quickinstaller
-    if qi.isProductInstalled(PROJECTNAME):
-        print "BUILD AND STORE PREVIEW %s" % ( obj.getPhysicalPath() , )
-        IPreviewable(obj).buildAndStorePreview()
-    return
+    u"""
+    We get a buildAndStorePreview request.
+    Let's check wether we have to do it or not, depending on options
+    and test wether file has been modified or not.
+    If this is ok, call the adapter's method buildAndStorePreview.
+    """
+    logger = logging.getLogger('buildAndStorePreview')
+    #print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),event)
+    form = obj.REQUEST.form
+    if form.get('file_delete', 'changed') == "nochange":
+        msg = ("File field of %s has not changed"
+              ": no preview computation" % "/".join(obj.getPhysicalPath()))
+        logger.log(logging.INFO, msg)
+        # file is modified ; dirty preview
+        previewable.fileModified()
+        previewable.reindexFilePreview()
+        return
+    
+    previewable = IPreviewable(obj)
+    isPreviewable = getattr(obj, 'isPreviewable', "always")
+    if isPreviewable == "always":
+        previewable.buildAndStorePreview()
+    else:
+        # file is modified ; dirty preview
+        previewable.fileModified()
+        previewable.reindexFilePreview()
+        msg = ("File's preview option is %s"
+              ": no new preview for %s " % (isPreviewable,
+                                            "/".join(obj.getPhysicalPath())))

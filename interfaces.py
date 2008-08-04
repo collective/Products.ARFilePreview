@@ -32,7 +32,8 @@ __licence__ = 'GPL'
 
 
 from zope.interface import Interface
-from zope.app.event.interfaces import IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from zope.viewlet.interfaces import IViewletManager
 
 
 class IPreviewAware( Interface ):
@@ -72,7 +73,22 @@ class IPreviewProvider( Interface ):
         update the preview by retransforming original file and store it
         """
     
+    def updatePreviewOnDemand( ):
+        """
+        update the preview by retransforming original file and store it,
+        the redirect to the object.
+        """
+    
     def updateAllPreviews( ):
         """
         update all the previews reachable from the catalog
         """
+    
+    def updateNewPreviews( ):
+        """
+        update the previews reachable from the catalog, for new files only
+        """
+    
+class IDocumentPreview(IViewletManager):
+    """A viewlet manager that sits after the content body
+    """
