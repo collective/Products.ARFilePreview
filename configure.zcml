@@ -2,20 +2,16 @@
             xmlns:browser="http://namespaces.zope.org/browser"
             xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
             xmlns:five="http://namespaces.zope.org/five">
-
-    <include package="zope.annotation" />
-    
-    
+  
     <five:implements
         class="Products.ATContentTypes.content.file.ATFile"
-        interface=".interfaces.IPreviewAware
-                   zope.annotation.interfaces.IAttributeAnnotatable"
-        />
+	interface=".interfaces.IPreviewAware"
+	/>
     
-    <adapter for=".interfaces.IPreviewAware"
-             factory=".adapters.ToPreviewableObject"
-             provides=".interfaces.IPreviewable"
-        />
+    <adapter
+	factory=".adapters.ToPreviewableObject"
+	provides=".interfaces.IPreviewable"
+	/>
     
     <browser:page
         for=".interfaces.IPreviewAware"
@@ -41,27 +37,18 @@
         permission="zope2.View"
         />
   
-  
-  
-    <!--<browser:viewlet-->
-    <!--    name="plone.abovecontentbody.filepreview"-->
-    <!--    for=".interfaces.IPreviewAware"-->
-    <!--    manager="plone.app.layout.viewlets.interfaces.IAboveContentBody"-->
-    <!--    class=".viewlet.PreviewViewlet"-->
-    <!--    permission="zope2.View"-->
-    <!--    />-->
     
     <subscriber
-        for=".interfaces.IPreviewAware
-            zope.lifecycleevent.ObjectModifiedEvent"
-        handler=".events.buildAndStorePreview"
+	for=".interfaces.IPreviewAware
+	     zope.lifecycleevent.ObjectModifiedEvent"
+	handler=".events.buildAndStorePreview"
         />
     
     <subscriber
-        for=".interfaces.IPreviewAware
-             Products.Archetypes.interfaces.IObjectInitializedEvent"
+	for=".interfaces.IPreviewAware
+	     Products.Archetypes.interfaces.IObjectInitializedEvent"
         handler=".events.buildAndStorePreview"
-        />
+	/>
 
     <genericsetup:registerProfile
         name="default"
@@ -70,5 +57,6 @@
         description="Extension profile for ARFilePreview functionality."
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
+
 </configure>
 

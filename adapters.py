@@ -1,34 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# File: ARFilePreview/adapters.py
-#
-# Copyright (c) 2007 atReal
-#
-# GNU General Public License (GPL)
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
-#
-
-"""
-$Id$
-"""
-
-__author__ = """Jean-Nicolas Bès <contact@atreal.net>"""
-__docformat__ = 'plaintext'
-__licence__ = 'GPL'
 
 import re
 import time
@@ -36,7 +6,7 @@ from DateTime import DateTime
 
 from zope.interface import implements
 from zope.component.interfaces import ComponentLookupError
-from zope.component import queryUtility
+from zope.component import queryUtility, adapts
 from zope.traversing.adapters import Traverser
 from zope.annotation.interfaces import IAnnotations
 
@@ -46,8 +16,8 @@ from BTrees.OOBTree import OOBTree
 from Products.Archetypes.utils import shasattr
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute
 
-from Products.ARFilePreview.interfaces import IPreviewable
-from Products.ARFilePreview.interfaces import IPreviewAware
+from Products.ARFilePreview.interfaces import *
+from sd.common.fields.annotation import AdapterAnnotationProperty
 
 _marker = object()
 
@@ -74,8 +44,29 @@ def unicodegen(daddygen, charset):
         yield data.decode(charset)
 
 class ToPreviewableObject( object ):
-    
-    implements( IPreviewable )
+
+    adapts(IPreviewAware)
+    implements(IPreviewable)
+
+    html = AdapterAnnotationProperty(
+        IPreviewable["html"],
+        ns = "htmlpreview",
+        )
+
+    lastFileChange = AdapterAnnotationProperty(
+        IPreviewable["lastFileChange"],
+        ns = "htmlpreview",
+        )
+
+    lastPreviewUpdate = AdapterAnnotationProperty(
+        IPreviewable["lastPreviewUpdate"],
+        ns = "htmlpreview",
+        )
+
+    subobjects = AdapterAnnotationProperty(
+        IPreviewable["subobjects"],
+        ns = "htmlpreview",
+        )
     
     _re_imgsrc = re.compile('<[iI][mM][gG]([^>]*) [sS][rR][cC]="([^">]*)"([^>]*)>')
     
@@ -99,30 +90,21 @@ class ToPreviewableObject( object ):
             result = '<img%s src="%s"%s>' % (prefix, inside, postfix)
             return result
     
+
     def __init__(self, context):
-        self.key         = 'htmlpreview'
-        self.context     = context
-        self.annotations = IAnnotations(context)
-        if not self.annotations.get(self.key, None):
-            self.annotations[self.key] = OOBTree()
-        if not self.annotations[self.key].get('html', None):
-            self.annotations[self.key]['html'] = ""
-        if not self.annotations[self.key].get('subobjects', None):
-            self.annotations[self.key]['subobjects'] = OOBTree()
-        if not self.annotations[self.key].get('lastFileChange', None):
-            self.annotations[self.key]['lastFileChange'] = 0
-        if not self.annotations[self.key].get('lastPreviewUpdate', None):
-            self.annotations[self.key]['lastPreviewUpdate'] = 0
-    
+        self.context = context
+        if not self.subobjects:
+            self.subobjects = OOBTree()
+
     def hasPreview(self):
-        return bool(len(self.annotations[self.key]['html']))
+        return bool(len(self.html))
     
     def setPreview(self, preview):
-        self.annotations[self.key]['html'] = preview
+        self.html = preview
         #self.context.reindexObject()
     
     def getPreview(self, mimetype="text/html"):
-        data = self.annotations[self.key]['html']
+        data = self.html
         if (mimetype!="text/html"
                 and data is not None
                 and data != ''):
@@ -138,16 +120,17 @@ class ToPreviewableObject( object ):
         mtr = self.context.mimetypes_registry
         mime = mtr.classify(data, filename=name)
         mime = str(mime) or 'application/octet-stream'
-        self.annotations[self.key]['subobjects'][name] = (data, mime)
+        self.subobjects[name] = (data, mime)
+
     
     def getSubObject(self, id):
-        if id in self.annotations[self.key]['subobjects'].keys():
-            return self.annotations[self.key]['subobjects'][id]
+        if id in self.subobjects.keys():
+            return self.subobjects[id]
         else:
             raise AttributeError
     
     def clearSubObjects(self):
-        self.annotations[self.key]['subobjects'] = OOBTree()
+        self.subobjects = OOBTree()
     
     def buildAndStorePreview(self):
         self.fileModified()
@@ -205,7 +188,7 @@ class ToPreviewableObject( object ):
         
         #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted)
-        self.annotations[self.key]['lastPreviewUpdate'] = time.time()
+        self.lastPreviewUpdate = time.time()
         return True
     
     def fileModified(self):
@@ -213,8 +196,8 @@ class ToPreviewableObject( object ):
         File has been modified ; store this date for further comparizon
         """
         self.clearSubObjects()
-        self.setPreview(u'')
-        self.annotations[self.key]['lastFileChange'] = time.time()
+        self.html = u""
+        self.lastFileChange = time.time()
     
     def updatePreview(self):
         """

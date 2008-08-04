@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<componentregistry>
+ <utilities>
+  <utility
+     interface="macbeth.lennox.IGlobalPreviewConfiguration"
+     name="arfilepreview.configuration"
+     factory="macbeth.banquo.GlobalConfiguration"/>
+ </utilities>
+</componentregistry>
