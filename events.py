@@ -49,14 +49,19 @@ def buildAndStorePreview(obj, event):
         msg = ("File field of %s has not changed"
               ": no preview computation" % "/".join(obj.getPhysicalPath()))
         logger.log(logging.INFO, msg)
+        # file is modified ; dirty preview
+        previewable.fileModified()
+        previewable.reindexFilePreview()
         return
     
     previewable = IPreviewable(obj)
-    previewable.fileModified()
     isPreviewable = getattr(obj, 'isPreviewable', "always")
     if isPreviewable == "always":
         previewable.buildAndStorePreview()
     else:
+        # file is modified ; dirty preview
+        previewable.fileModified()
+        previewable.reindexFilePreview()
         msg = ("File's preview option is %s"
               ": no new preview for %s " % (isPreviewable,
                                             "/".join(obj.getPhysicalPath())))

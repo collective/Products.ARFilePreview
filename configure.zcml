@@ -53,7 +53,7 @@
     
     <subscriber
         for=".interfaces.IPreviewAware
-             Products.Archetypes.interfaces.IObjectEditedEvent"
+            zope.lifecycleevent.ObjectModifiedEvent"
         handler=".events.buildAndStorePreview"
         />
     

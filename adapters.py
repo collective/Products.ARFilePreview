@@ -119,7 +119,7 @@ class ToPreviewableObject( object ):
     
     def setPreview(self, preview):
         self.annotations[self.key]['html'] = preview
-        self.context.reindexObject()
+        #self.context.reindexObject()
     
     def getPreview(self, mimetype="text/html"):
         data = self.annotations[self.key]['html']
@@ -150,12 +150,16 @@ class ToPreviewableObject( object ):
         self.annotations[self.key]['subobjects'] = OOBTree()
     
     def buildAndStorePreview(self):
+        self.fileModified()
+        result = self.prebuildPreview()
+        self.reindexFilePreview()
+        return result
+        
+    def prebuildPreview(self):
         print "Build and store preview"
+
         if getattr(self.context, 'isPreviewable', "always") == "never":
-            self.clearSubObjects()
-            self.setPreview(u'')
             return False
-        self.clearSubObjects()
         transforms = queryUtility(ITransformEngine)
 
         field = self.context.getPrimaryField()
@@ -202,13 +206,14 @@ class ToPreviewableObject( object ):
         #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted)
         self.annotations[self.key]['lastPreviewUpdate'] = time.time()
-        self.context.reindexObject()
         return True
     
     def fileModified(self):
         """
         File has been modified ; store this date for further comparizon
         """
+        self.clearSubObjects()
+        self.setPreview(u'')
         self.annotations[self.key]['lastFileChange'] = time.time()
     
     def updatePreview(self):
@@ -216,6 +221,9 @@ class ToPreviewableObject( object ):
         Update the preview
         """
         return self.buildAndStorePreview()
+    
+    def reindexFilePreview(self):
+        return self.context.reindexObject(idxs=['SearchableText', 'lastPreviewUpdate','lastFileChange'])
 
 _marker = object()
 
