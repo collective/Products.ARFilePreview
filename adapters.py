@@ -71,8 +71,22 @@ def text2ugen(data, charset):
 
 def unicodegen(daddygen, charset):
     for data in daddygen:
-        #yield data.decode(charset)
-        yield data
+        char = ord(data[-1])
+        if charset == 'utf-8' and char>127:
+            if not(char & 32):
+                num = 1
+            elif not(char & 16):
+                num = 2
+            elif not(char & 8):
+                num = 3
+            else:
+                print char
+                raise "Invalid utf-8 boundary"
+            nextblock = daddygen.next()
+            yield (data + nextblock[0:num]).decode(charset)
+            yield (nextblock[num:]).decode(charset)
+        else:
+            yield data.decode(charset)
 
 class ToPreviewableObject( object ):
     
