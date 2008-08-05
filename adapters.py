@@ -71,7 +71,8 @@ def text2ugen(data, charset):
 
 def unicodegen(daddygen, charset):
     for data in daddygen:
-        yield data.decode(charset)
+        #yield data.decode(charset)
+        yield data
 
 class ToPreviewableObject( object ):
     
@@ -150,25 +151,25 @@ class ToPreviewableObject( object ):
         self.annotations[self.key]['subobjects'] = OOBTree()
     
     def buildAndStorePreview(self):
+        print "Build and store preview"
         self.fileModified()
         result = self.prebuildPreview()
         self.reindexFilePreview()
         return result
         
-    def prebuildPreview(self):
-        print "Build and store preview"
-
-        if getattr(self.context, 'isPreviewable', "always") == "never":
-            return False
-        transforms = queryUtility(ITransformEngine)
-
+    def getDataAndContenttype(self):
         field = self.context.getPrimaryField()
         fileobj = self.context.getFile()
         if not fileobj.data:
             print "No file data!"
             return False
+        try:
+            isbinary = self.context.isBinary(field.getName())
+        except AssertionError:
+            # object not binary ; maybe blobfile
+            isbinary = False
         
-        if self.context.isBinary(field.getName()):
+        if isbinary:
             if shasattr(fileobj, 'getIterator'):
                 data = fileobj.getIterator()
             elif isinstance(fileobj.data, (str, unicode)):
@@ -177,12 +178,21 @@ class ToPreviewableObject( object ):
                 data=chunk2gen(fileobj.data)
         else:
             if shasattr(fileobj, 'getIterator'):
-                data = unicodegen(fileobj.getIterator())
+                data = unicodegen(fileobj.getIterator(), 'utf-8')
             elif isinstance(fileobj.data, (str, unicode)):
                 data = chunk2ugen(fileobj.data, 'utf-8')
             else:
                 data = text2ugen(fileobj.data, 'utf-8')
-        result = transforms.transform(data, field.getContentType(self.context),'text/html')
+        return ( data, field.getContentType(self.context) )
+        
+        
+    def prebuildPreview(self):
+        if getattr(self.context, 'isPreviewable', "always") == "never":
+            return False
+
+        data, contenttype = self.getDataAndContenttype()
+        transforms = queryUtility(ITransformEngine)
+        result = transforms.transform(data, contenttype,'text/html')
 
         if result is None:
             self.setPreview(u"")
@@ -228,11 +238,18 @@ class ToPreviewableObject( object ):
 _marker = object()
 
 def previewIndexWrapper(object, portal, **kwargs):
+    direct_files_index_list = ["application/vnd.ms-excel", "application/msexcel", "application/pdf",]
     data = object.SearchableText()
     try:
         obj = IPreviewable(object)
-        preview = obj.getPreview(mimetype="text/plain")
-        return " ".join([data, preview])
+        objectdata, contenttype = obj.getDataAndContenttype()
+        if contenttype in direct_files_index_list :
+            transforms = queryUtility(ITransformEngine)
+            preview = transforms.transform(objectdata, contenttype, 'text/plain').data
+            preview = "".join(preview)
+        else:
+            preview = obj.getPreview(mimetype="text/plain")
+        return u" ".join([data, preview])
     except (ComponentLookupError, TypeError, ValueError):
         # The catalog expects AttributeErrors when a value can't be found
         return data
