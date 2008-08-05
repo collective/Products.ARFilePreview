@@ -3,8 +3,8 @@
 import re
 import time
 from DateTime import DateTime
-
-from zope.interface import implements
+from OFS.SimpleItem import SimpleItem
+from zope.interface import implements, Attribute
 from zope.component.interfaces import ComponentLookupError
 from zope.component import queryUtility, adapts
 from zope.traversing.adapters import Traverser
@@ -18,6 +18,7 @@ from Products.CMFPlone.CatalogTool import registerIndexableAttribute
 
 from Products.ARFilePreview.interfaces import *
 from sd.common.fields.annotation import AdapterAnnotationProperty
+from zope.schema import FieldProperty
 
 _marker = object()
 
@@ -43,7 +44,22 @@ def unicodegen(daddygen, charset):
     for data in daddygen:
         yield data.decode(charset)
 
-class ToPreviewableObject( object ):
+
+
+from sd.common.adapters.storage.interfaces import IStorage, IStorageItem
+class PreviewInformation(SimpleItem):
+    implements(IStorageItem)
+    name = FieldProperty(IStorageItem['name'])
+    data = Attribute("The data to store")
+    mime = Attribute("Mimetype of the file")
+
+    def __init__(self, name, data, mime):
+        self.name = name
+        self.data = data
+        self.mime = mime
+        
+
+class ToPreviewableObject(object):
 
     adapts(IPreviewAware)
     implements(IPreviewable)

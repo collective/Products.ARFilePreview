@@ -10,9 +10,12 @@
     
     <adapter
 	factory=".adapters.ToPreviewableObject"
-	provides=".interfaces.IPreviewable"
 	/>
     
+  <adapter
+      factory=".adapters.PreviewStorage"
+      provides="sd.common.adapters.storage.interfaces.IStorage" />
+
     <browser:page
         for=".interfaces.IPreviewAware"
         name="preview_provider"
