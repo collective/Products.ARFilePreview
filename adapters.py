@@ -254,6 +254,8 @@ _marker = object()
 def previewIndexWrapper(object, portal, **kwargs):
     direct_files_index_list = ["application/vnd.ms-excel", "application/msexcel", "application/pdf",]
     data = object.SearchableText()
+    if not isinstance(data, unicode):
+        data = data.decode('utf-8', 'ignore')
     try:
         obj = IPreviewable(object)
         objectdata, contenttype = obj.getDataAndContenttype()
