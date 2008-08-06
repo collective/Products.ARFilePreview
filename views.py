@@ -103,8 +103,6 @@ class PreviewProvider( BrowserView ):
             try:
                 obj=brain.getObject()
                 IPreviewable(obj).updatePreview()
-                obj.reindexObject()
-                
             except Exception, e:
                 msg = "%s %s %s" % (brain.getPath(), str(e.__class__.__name__), str(e))
                 status+= "%s </div>" % msg
