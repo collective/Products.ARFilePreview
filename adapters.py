@@ -174,9 +174,9 @@ class ToPreviewableObject( object ):
     def getDataAndContenttype(self):
         field = self.context.getPrimaryField()
         fileobj = self.context.getFile()
-        if not fileobj.data:
+        if not fileobj or not fileobj.data:
             print "No file data!"
-            return False
+            return (None, None)
         try:
             isbinary = self.context.isBinary(field.getName())
         except AssertionError:
@@ -259,6 +259,8 @@ def previewIndexWrapper(object, portal, **kwargs):
     try:
         obj = IPreviewable(object)
         objectdata, contenttype = obj.getDataAndContenttype()
+        if not objectdata:
+            return data
         if contenttype in direct_files_index_list :
             transforms = queryUtility(ITransformEngine)
             preview = transforms.transform(objectdata, contenttype, 'text/plain').data
