@@ -146,4 +146,6 @@ def previewIndexWrapper(object, portal, **kwargs):
         # The catalog expects AttributeErrors when a value can't be found
         return data
 
-registerIndexableAttribute('SearchableText', previewIndexWrapper)
+#registerIndexableAttribute('SearchableText', previewIndexWrapper)
+
+
