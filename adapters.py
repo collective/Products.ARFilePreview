@@ -262,6 +262,7 @@ def lastFileChange(object, portal, **kwargs):
     return last_file_change
 
 
-registerIndexableAttribute('SearchableText', previewIndexWrapper)
+#registerIndexableAttribute('SearchableText', previewIndexWrapper)
+
 registerIndexableAttribute('lastPreviewUpdate', lastPreviewUpdate)
 registerIndexableAttribute('lastFileChange', lastFileChange)
