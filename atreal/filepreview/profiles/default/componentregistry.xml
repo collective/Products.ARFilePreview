@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<componentregistry>
+ <utilities>
+  <utility
+     interface="atreal.filepreview.interfaces.IGlobalPreviewConfiguration"
+     name="arfilepreview.configuration"
+     factory="atreal.filepreview.utilities.GlobalConfiguration"/>
+ </utilities>
+</componentregistry>

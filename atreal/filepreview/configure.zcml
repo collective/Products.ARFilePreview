@@ -1,0 +1,26 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+	   xmlns:browser="http://namespaces.zope.org/browser"
+	   xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+	   xmlns:five="http://namespaces.zope.org/five"
+	   xmlns:grok="http://namespaces.zope.org/grok">
+        
+  <include package="five.grok" />
+  <include package=".browser" />
+  <grok:grok package=".adapters" />
+  <grok:grok package=".events" />
+  <grok:grok package=".utilities" />
+
+  <five:implements
+      class="Products.ATContentTypes.content.file.ATFile"
+      interface=".interfaces.IPreviewAware"
+      />
+
+  <genericsetup:registerProfile
+      name="default"
+      title="ARFilePreview profile"
+      directory="profiles/default"
+      description="Extension profile for ARFilePreview functionality."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+</configure>

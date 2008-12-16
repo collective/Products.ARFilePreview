@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+<div metal:fill-slot="main">
+    <tal:main-macro metal:define-macro="main" 
+           tal:define="content_type here/get_content_type|here/Format;
+                       kssClassesView context/@@kss_field_decorator_view; 
+                       getKssClasses nocall:kssClassesView/getKssClassesInlineEditable">
+
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+
+        <h1 metal:use-macro="here/kss_generic_macros/macros/generic_title_view">
+            Title or id
+        </h1>
+
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+        <p metal:use-macro="here/kss_generic_macros/macros/generic_description_view">
+          Description
+        </p>
+
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+    
+        <div style="position: relative;"
+              tal:content="structure here/@@preview_provider/getPreview" />
+        <div metal:use-macro="here/document_relateditems/macros/relatedItems">
+            show related items if they exist
+        </div>
+    
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</div>
+
+</body>
+
+</html>
