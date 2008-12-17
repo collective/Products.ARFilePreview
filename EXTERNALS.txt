@@ -1,0 +1,6 @@
+# svn propset svn:externals -F EXTERNALS.txt .
+
+sd.common http://tracker.trollfot.org/svn/projects/sd.common/branches/sd.common-2.5-eads
+atreal.filepreview https://svn.plone.org/svn/collective/ARFilePreview/branches/atreal.filepreview-egg-trollfot/
+five.grok svn://svn.zope.org/repos/main/five.grok/trunk
+grokcore.viewlet svn://svn.zope.org/repos/main/grokcore.viewlet/trunk/
