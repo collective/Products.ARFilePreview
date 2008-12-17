@@ -43,7 +43,6 @@ class FileAsDoc(grok.View):
     grok.name('file_as_doc')
     grok.require('zope2.View')
     grok.context(interfaces.IPreviewAware)
-    grok.implements(interfaces.IPreviewProvider)
 
     def getPreview(self):
         previewable = interfaces.IPreviewable(self.context)
@@ -60,7 +59,6 @@ class PreviewDisplay(grok.Viewlet):
     grok.require('zope2.View')
     grok.viewletmanager(IBelowContentBody)
     grok.context(interfaces.IPreviewAware)
-    grok.implements(interfaces.IPreviewProvider)
 
     @property
     def hide(self):

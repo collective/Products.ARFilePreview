@@ -17,6 +17,13 @@ class IGlobalPreviewHandler(Interface):
     """
     """
 
+class IPreviewCreator(Interface):
+
+    def create(self, name, data):
+        """Returns a storage item.
+        """
+    
+
 class IPreviewConfiguration(Interface):
     """Configuration options
     """
@@ -33,7 +40,6 @@ class IGlobalPreviewConfiguration(Interface):
     """Configuration options
     """
 
-    #### THIS IS JUST FOR THE DEMO
     quality = Choice(
         title=_(u"arfilepreview_quality", default="Quality"),
         default=8,
@@ -77,36 +83,3 @@ class IPreviewable(Interface):
         schema=IBTree,
         )
 
-   
-class IPreviewProvider( Interface ):
-    
-    def hasPreview( ):
-        """
-        Has the preview
-        """
-    
-    def getPreview( ):
-        """
-        Get the preview
-        """
-        
-    def updatePreview( ):
-        """
-        update the preview by retransforming original file and store it
-        """
-    
-    def updatePreviewOnDemand( ):
-        """
-        update the preview by retransforming original file and store it,
-        the redirect to the object.
-        """
-    
-    def updateAllPreviews( ):
-        """
-        update all the previews reachable from the catalog
-        """
-    
-    def updateNewPreviews( ):
-        """
-        update the previews reachable from the catalog, for new files only
-        """

@@ -2,87 +2,34 @@
 
 import re
 import time
-from DateTime import DateTime
-from OFS.SimpleItem import SimpleItem
-from zope.component import queryUtility, adapts
-from zope.interface import implements, Attribute
-from zope.schema.fieldproperty import FieldProperty
+from five import grok
+from zope.component import queryUtility, createObject
 from zope.annotation.interfaces import IAnnotations
 from plone.transforms.interfaces import ITransformEngine
 from Products.Archetypes.utils import shasattr
-
 from sd.common.fields.annotation import AdapterAnnotationProperty
-from sd.common.adapters.storage.interfaces import IDictStorage, IStorageItem
-from sd.common.adapters.storage.annotation import GenericAnnotationStorage
+from sd.common.adapters.storage.interfaces import IDictStorage
+from utils import chunk2gen, text2gen, chunk2ugen, text2ugen, unicodegen
+from interfaces import *
 
-from interfaces import IPreviewAware, IPreviewConfiguration, IPreviewable
-
-from five import grok
-_marker = object()
-
-
-def chunk2gen(chunkedData):
-    while not chunkedData is None:
-        yield chunkedData.data
-        chunkedData = chunkedData.next
-
-def text2gen(Data):
-    while len(Data):
-        yield Data[:10000]
-        Data = Data[10000:]
-
-def chunk2ugen(chunkedData, charset):
-    yield chunkedData.decode(charset, 'ignore')
-
-def text2ugen(data, charset):
-    while len(data):
-        yield data[:10000].decode(charset)
-        data = data[10000:]
-
-def unicodegen(daddygen, charset):
-    for data in daddygen:
-        yield data.decode(charset)
-
-
-
-class PreviewInformation(SimpleItem):
-    implements(IStorageItem)
-    name = FieldProperty(IStorageItem['name'])
-    data = Attribute("The data to store")
-    mime = Attribute("Mimetype of the file")
-
-    def __init__(self, name, data, mime):
-        self.name = unicode(name)
-        self.data = data
-        self.mime = mime
-
-class PreviewStorage(GenericAnnotationStorage):
-    grok.context(IPreviewAware)
-    storage = AdapterAnnotationProperty(
-        IDictStorage['storage'],
-        ns="atreal.filepreview"
-        )
-
-    def clear(self):
-        self.storage = dict()
 
 class PreviewConfigurationAdapter(grok.Adapter):
     """This adapter will not yield to kiss the ground before your feet.
     Instead, it will write the fields' values in an annotation :)
     """
     grok.context(IPreviewAware)
-    implements(IPreviewConfiguration)
+    grok.implements(IPreviewConfiguration)
     
-    # Annotation fields
     quality = AdapterAnnotationProperty(
         IPreviewConfiguration["quality"],
         ns = "atreal.filepreview.configuration",
         )
 
+
 class ToPreviewableObject(grok.Adapter):
 
     grok.context(IPreviewAware)
-    implements(IPreviewable)
+    grok.implements(IPreviewable)
 
     html = AdapterAnnotationProperty(
         IPreviewable["html"],
@@ -143,11 +90,8 @@ class ToPreviewableObject(grok.Adapter):
         return data
 
     def setSubObject(self, name, data):
-        mtr = self.context.mimetypes_registry
-        mime = mtr.classify(data, filename=name)
-        mime = str(mime) or 'application/octet-stream'
-        subobj = PreviewInformation(name, data, mime)
-        return IDictStorage(self.context).store(subobj)
+        obj = IPreviewCreator(self.context).create(name, data)
+        return IDictStorage(self.context).store(obj)
 
     def getSubObject(self, id):
         return IDictStorage(self.context).retrieve(id)
