@@ -42,6 +42,18 @@ class IGlobalPreviewConfiguration(Interface):
         values=range(1, 11)
         )
 
+    preview_display = Choice(
+        title=_(u"arfilepreview_display", default="Display of the preview"),
+        default="Embedded",
+        description=_(u"arfilepreview_display_desc",
+                      default=(u"How should the preview be "
+                               u"displayed on the file view")),
+        values=[u"Embedded",
+                u"Popup",
+                u"Disabled",
+                u"iFrame"]
+        )
+
 
 class IPreviewable(Interface):
 

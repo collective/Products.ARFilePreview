@@ -67,7 +67,7 @@ class GlobalConfigurationForm(grok.EditForm):
     grok.name("global_preview_configuration")
     grok.require("cmf.ManagePortal")
     grok.context(PloneSite)
-    grok.template('form')
+    grok.template('formconfiglet')
     
     # For the form details
     label = _(u"arpreviewfile_global_configuration",
