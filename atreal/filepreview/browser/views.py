@@ -6,51 +6,56 @@ from zope.cachedescriptors.property import CachedProperty
 from Products.Archetypes.BaseObject import Wrapper
 from atreal.filepreview import interfaces
 from plone.app.layout.viewlets.interfaces import IBelowContentBody
-
+from zope.publisher.interfaces.http import IHTTPRequest
+from zope.traversing.interfaces import ITraversable
+from sd.common.adapters.storage.interfaces import IDictStorage
+from zope.publisher.interfaces import NotFound
+        
 grok.templatedir('templates')
 
 
-class Fullview(grok.View):
+class PreviewUpdater(grok.View):
+    grok.name('preview_updater')
+    grok.require('cmf.ModifyPortalContent')
+    grok.context(interfaces.IPreviewAware)
 
-    grok.name('preview')
+    @property
+    def previewable(self):
+        return interfaces.IPreviewable(self.context)
+           
+    def updatePreview(self):
+        self.previewable.buildAndStorePreview()
+
+    def updatePreviewOnDemand(self):
+        self.previewable.buildAndStorePreview()
+        self.request.response.redirect(self.context.absolute_url()+'/view')
+
+    def publishTraverse(self, request, name):
+        if name in ['updatePreview', 'updatePreviewOnDemand']:
+            return getattr(self, name)()
+        return self.render()
+
+    def render(self):
+        return u""
+
+
+class FileAsDoc(grok.View):
+    grok.name('file_as_doc')
     grok.require('zope2.View')
     grok.context(interfaces.IPreviewAware)
     grok.implements(interfaces.IPreviewProvider)
 
-    @CachedProperty
-    def object(self):
-        return interfaces.IPreviewable(self.context)
-       
-    def hasPreview(self):
-        return self.object.hasPreview()
-  
+
+class PreviewDisplay(grok.Viewlet):
+    grok.name('atreal.filepreview.display')
+    grok.require('zope2.View')
+    grok.viewletmanager(IBelowContentBody)
+    grok.context(interfaces.IPreviewAware)
+    grok.implements(interfaces.IPreviewProvider)
+
     def getPreview(self):
-        return self.object.getPreview() 
-    
-    def updatePreview(self):
-        self.object.buildAndStorePreview()
-
-    def updatePreviewOnDemand(self):
-        self.object.buildAndStorePreview()
-        self.request.response.redirect(self.context.absolute_url()+'/view')
-
-    def publishTraverse(self, request, name):
-        info = self.object.getSubObject(name)
-        if info is not None:
-            return Wrapper(info.data, info.name, info.mime).__of__(self)
-        return getattr(self, name)
-
-
-class FileAsDoc(grok.View):
-    grok.name('file_asdoc')
-    grok.require('zope2.View')
-    grok.context(interfaces.IPreviewAware)
-
-
-class FilePreview(grok.View):
-    grok.name('file_preview')
-    grok.require('zope2.View')
-    grok.context(interfaces.IPreviewAware)
+        previewable = interfaces.IPreviewable(self.context)
+        return previewable.getPreview() 
 
 
 class PreviewConfiguration(grok.Viewlet):
@@ -58,3 +63,20 @@ class PreviewConfiguration(grok.Viewlet):
     grok.require('cmf.ModifyPortalContent')
     grok.viewletmanager(IBelowContentBody)
     grok.context(interfaces.IPreviewAware)
+
+
+class PreviewTraverser(grok.MultiAdapter):
+    grok.name("preview")
+    grok.adapts(interfaces.IPreviewAware, IHTTPRequest)
+    grok.provides(ITraversable)
+	   
+    def __init__(self, context, request=None):
+        self.context = context
+        self.request = request       
+
+    def traverse(self, name, ignore):
+        info = IDictStorage(self.context).retrieve(name)
+        if info is None:
+            raise NotFound(self.context, name, self.request)
+    
+        return Wrapper(info.data, info.name, info.mime).__of__(self.context)

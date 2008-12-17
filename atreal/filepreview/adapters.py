@@ -117,7 +117,7 @@ class ToPreviewableObject(grok.Adapter):
                 inside = inside[2:]
             if inside in self.sublist:
                 # convert elems that are known images 
-                inside = '%s/@@preview_provider/%s' % (self.instance.getId(), inside)
+                inside = '%s/++preview++%s' % (self.instance.getId(), inside)
             result = '<img%s src="%s"%s>' % (prefix, inside, postfix)
             return result
     
