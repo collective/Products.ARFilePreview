@@ -1,1 +1,2 @@
-<div tal:content="structure viewlet/getPreview" />
+<div tal:condition="not:viewlet/hide|nothing" 
+     tal:content="structure viewlet/getPreview" />

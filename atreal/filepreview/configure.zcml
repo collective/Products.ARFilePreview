@@ -1,25 +1,38 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-	   xmlns:browser="http://namespaces.zope.org/browser"
-	   xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-	   xmlns:five="http://namespaces.zope.org/five"
-	   xmlns:grok="http://namespaces.zope.org/grok">
-        
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:grok="http://namespaces.zope.org/grok">
+
+  <!-- Subpackages -->
   <include package="five.grok" />
   <include package=".browser" />
+  
+  <!-- Grokking the components --> 
   <grok:grok package=".adapters" />
   <grok:grok package=".events" />
   <grok:grok package=".utilities" />
 
+  <!-- Assigning marker interfaces to relevant content -->
   <five:implements
       class="Products.ATContentTypes.content.file.ATFile"
       interface=".interfaces.IPreviewAware"
       />
 
+  <!-- Profiles -->
   <genericsetup:registerProfile
       name="default"
-      title="ARFilePreview profile"
+      title="FilePreview base profile"
       directory="profiles/default"
-      description="Extension profile for ARFilePreview functionality."
+      description="A preview module for Plone files."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:registerProfile
+      name="blob"
+      title="FilePreview BlobFile policy extension"
+      directory="profiles/blob"
+      description="Extension profile for atreal.filepreview using BlobFile."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 

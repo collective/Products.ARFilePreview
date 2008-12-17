@@ -1,2 +1,0 @@
-<a href=""
-   tal:attributes="href string:${context/absolute_url}/@@file_preview_configuration">Configuration of the preview</a>

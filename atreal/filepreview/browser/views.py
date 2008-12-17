@@ -45,6 +45,15 @@ class FileAsDoc(grok.View):
     grok.context(interfaces.IPreviewAware)
     grok.implements(interfaces.IPreviewProvider)
 
+    def getPreview(self):
+        previewable = interfaces.IPreviewable(self.context)
+        return previewable.getPreview() 
+
+
+class FullscreenPreview(FileAsDoc):
+    grok.name('fullscreen_preview')
+    grok.template('previewdisplay')
+
 
 class PreviewDisplay(grok.Viewlet):
     grok.name('atreal.filepreview.display')
@@ -53,16 +62,13 @@ class PreviewDisplay(grok.Viewlet):
     grok.context(interfaces.IPreviewAware)
     grok.implements(interfaces.IPreviewProvider)
 
+    @property
+    def hide(self):
+        return self.view.__name__ == u'file_as_doc'
+
     def getPreview(self):
         previewable = interfaces.IPreviewable(self.context)
         return previewable.getPreview() 
-
-
-class PreviewConfiguration(grok.Viewlet):
-    grok.name('atreal.filepreview.localconfigure')
-    grok.require('cmf.ModifyPortalContent')
-    grok.viewletmanager(IBelowContentBody)
-    grok.context(interfaces.IPreviewAware)
 
 
 class PreviewTraverser(grok.MultiAdapter):
