@@ -1,0 +1,23 @@
+<configure xmlns="http://namespaces.zope.org/five"
+	   xmlns:grok="http://namespaces.zope.org/grok"
+	   xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+	   i18n_domain="atreal">
+
+  <grok:grok package=".security" />
+  <grok:grok package=".adapters" />
+  <grok:grok package=".content" />
+  <grok:grok package=".events" />
+
+  <registerPackage
+      package="."
+      initialize=".content.register.RegisterContent" />
+  
+  <genericsetup:registerProfile
+      name="default"
+      title="AtReal SpeedFile"
+      directory="profiles/default"
+      description="AtReal SpeedFile profile"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+  
+</configure>

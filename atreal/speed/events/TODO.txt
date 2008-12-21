@@ -1,0 +1,76 @@
+FOR THE FILE :
+
+    # This method is only called once after object creation.
+    def at_post_create_script(self):
+        """
+        This method is called after every SpeedFile creation.
+        It triggers the conversion of the original file to text/html (updatePreview)
+        and parse it for metadata (updateMetadata)
+        """
+        #ensure that the mighty manager don't inherit roles for Speed files
+        #self.folder_localrole_set(use_acquisition=0)
+        
+        #the savepoint is mandatory for portal_factory
+        filename=self.getOriginalFile().filename
+        idobj, fnum = self.updateAydi(filename)
+        self.getOriginalFile().filename = idobj
+        self.updatePreview()
+        self.updateMetadata()
+        self.updateTitleFromMetas(filename, fnum)
+        self.reindexObject()
+       
+    def at_post_edit_script(self):
+        """
+        This method is called after every subsequent edit.
+        It triggers the conversion of the original file to text/html (updatePreview)
+        and parse it for metadata (updateMetadata)
+        """
+        if self._v_changedfile:
+            filename = self.getOriginalFile().filename
+            idobj, fnum = self.updateAydi(filename)
+            self.getOriginalFile().filename = idobj
+            self.updatePreview()
+            self.updateMetadata()
+            self._v_changedfile=False
+            self.reindexObject()
+            self.updateTitleFromMetas(filename, fnum)
+        else:
+            self.updateTitleFromMetas()
+    
+    security.declarePrivate('manage_afterPUT')
+    def manage_afterPUT(self, data, marshall_data, file, context, mimetype, filename, REQUEST, RESPONSE):
+        """
+        This method is called after a FTP/WebDAV PUT has been marshalled.
+        """
+        filename = unicode(urllib.unquote(REQUEST._steps[-2]).decode('iso-8859-1','ignore'))
+        idobj, fnum = self.updateAydi(filename)
+        self.getOriginalFile().filename=idobj
+        self.updateTitleFromMetas(filename, fnum)
+        self.updatePreview()
+        self.updateMetadata()
+        self.reindexObject()
+        BaseContent.manage_afterPUT(self,data,marshall_data,file,context,mimetype,filename,REQUEST,RESPONSE)
+    
+    def manage_beforeDelete(self,item,container):
+        """
+        This method removes SpeedLinks before deleting the original file.
+        """
+        self.speed_tool.unpublish(self)
+        if hasattr(self,"document_subobjects") and not (self.document_subobjects is None):
+            self.document_subobjects.manage_beforeDelete(self.document_subobjects,item)
+            self.document_subobjects = None
+        BaseContent.manage_beforeDelete(self, item, container)
+    
+    def manage_afterAdd(self, item, container):
+        #log = LogClass(self, 'manage_afterAdd', stack=True)
+        #log.logPath(self)
+        #log.log("OriginalFile.filename "+getattr(self.getOriginalFile(), 'filename', 'NONE'))
+        BaseContent.manage_afterAdd(self,item,container)
+        self.updatePreview()
+    
+    def getMetas(self):
+        """getMetas"""
+        metas=[]
+        for field in self.Schema().filterFields(speedmeta=1):
+            metas.append((field.widget.label, field.get(self)))
+        return metas
