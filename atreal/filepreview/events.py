@@ -18,17 +18,15 @@ def buildAndStorePreview(obj, event):
     If this is ok, call the adapter's method buildAndStorePreview.
     """   
     logger = logging.getLogger('buildAndStorePreview')
+    
     #print "BUILD AND STORE PREVIEW %s on %s" % (obj.getPhysicalPath(),event)
     form = obj.REQUEST.form
     if form.get('file_delete', 'changed') == "nochange":
         msg = ("File field of %s has not changed"
               ": no preview computation" % "/".join(obj.getPhysicalPath()))
         logger.log(logging.INFO, msg)
-        # file is modified ; dirty preview
-        previewable.fileModified()
-        previewable.reindexFilePreview()
         return
-    
+
     previewable = IPreviewable(obj)
     isPreviewable = getattr(obj, 'isPreviewable', "always")
     if isPreviewable == "always":
