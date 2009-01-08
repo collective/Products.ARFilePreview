@@ -33,10 +33,10 @@ class ConfigurationForm(grok.EditForm):
     # About the fields
     form_fields = form.FormFields(interfaces.IPreviewConfiguration)
 
-    def next_url(self):
+    def next_url(self, target=None):
         url = getMultiAdapter((self.context, self.request),
                               name='absolute_url')()
-        self.request.response.redirect(url + '/view')
+        self.request.response.redirect(url + (target or '/view'))
 
     @form.action(_(u"label_change_configuration",
                    default="Update configuration"),
@@ -79,7 +79,18 @@ class GlobalConfigurationForm(ConfigurationForm):
     # About the fields
     form_fields = form.FormFields(interfaces.IGlobalPreviewConfiguration)
 
-    def next_url(self):
-        url = getMultiAdapter((self.context, self.request),
-                              name='absolute_url')()
-        self.request.response.redirect(url + '/@@global_preview_configuration')
+
+    @form.action(_(u"label_change_configuration",
+                   default="Update configuration"),
+                 condition=form.haveInputWidgets,
+                 name=u'save')
+    def handle_save_action(self, action, data):
+        if form.applyChanges(self.context, self.form_fields,
+                             data, self.adapters):
+            self.status = "Changes saved"
+        else:
+            self.status = "No changes"
+
+    @form.action(__(u"label_cancel", default=u"Cancel"), name=u'cancel')
+    def handle_cancel_action(self, action, data):
+        return self.next_url(target="/plone_control_panel")
