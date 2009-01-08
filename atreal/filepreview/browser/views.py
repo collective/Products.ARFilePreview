@@ -2,22 +2,24 @@
 
 # Imports: Zope
 from five import grok
-from zope.cachedescriptors.property import CachedProperty
 from Products.Archetypes.BaseObject import Wrapper
 from atreal.filepreview import interfaces
 from plone.app.layout.viewlets.interfaces import IBelowContentBody
-from zope.publisher.interfaces.http import IHTTPRequest
-from zope.traversing.interfaces import ITraversable
-from sd.common.adapters.storage.interfaces import IDictStorage
 from zope.publisher.interfaces import NotFound
-        
+from zope.component import getUtility
+from zope.traversing.interfaces import ITraversable
+from zope.publisher.interfaces.http import IHTTPRequest
+from zope.cachedescriptors.property import CachedProperty
+from sd.common.adapters.storage.interfaces import IDictStorage
+
+
 grok.templatedir('templates')
+grok.context(interfaces.IPreviewAware)
 
 
 class PreviewUpdater(grok.View):
     grok.name('preview_updater')
     grok.require('cmf.ModifyPortalContent')
-    grok.context(interfaces.IPreviewAware)
 
     @property
     def previewable(self):
@@ -42,7 +44,6 @@ class PreviewUpdater(grok.View):
 class FileAsDoc(grok.View):
     grok.name('file_as_doc')
     grok.require('zope2.View')
-    grok.context(interfaces.IPreviewAware)
 
     def getPreview(self):
         previewable = interfaces.IPreviewable(self.context)
@@ -51,22 +52,29 @@ class FileAsDoc(grok.View):
 
 class FullscreenPreview(FileAsDoc):
     grok.name('fullscreen_preview')
-    grok.template('previewdisplay')
+    grok.template('fullscreen')
 
 
 class PreviewDisplay(grok.Viewlet):
     grok.name('atreal.filepreview.display')
     grok.require('zope2.View')
     grok.viewletmanager(IBelowContentBody)
-    grok.context(interfaces.IPreviewAware)
+
+    @CachedProperty
+    def display_choice(self):
+        util = getUtility(interfaces.IGlobalPreviewConfiguration,
+                          name='arfilepreview.configuration')
+        return util.preview_display
 
     @property
     def hide(self):
-        return self.view.__name__ == u'file_as_doc'
+        return (self.view.__name__ == u'file_as_doc' or
+                self.display_choice == u'Disabled')
 
     def getPreview(self):
         previewable = interfaces.IPreviewable(self.context)
         return previewable.getPreview() 
+
 
 
 class PreviewTraverser(grok.MultiAdapter):

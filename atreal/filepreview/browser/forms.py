@@ -33,6 +33,10 @@ class ConfigurationForm(grok.EditForm):
     # About the fields
     form_fields = form.FormFields(interfaces.IPreviewConfiguration)
 
+    def next_url(self):
+        url = getMultiAdapter((self.context, self.request),
+                              name='absolute_url')()
+        self.request.response.redirect(url + '/view')
 
     @form.action(_(u"label_change_configuration",
                    default="Update configuration"),
@@ -49,19 +53,15 @@ class ConfigurationForm(grok.EditForm):
             notify(EditCancelledEvent(self.context))
             self.status = "No changes"
             
-        url = getMultiAdapter((self.context, self.request),
-                              name='absolute_url')()
-        self.request.response.redirect(url + '/view')
+        return self.next_url()
 
     @form.action(__(u"label_cancel", default=u"Cancel"), name=u'cancel')
     def handle_cancel_action(self, action, data):
         notify(EditCancelledEvent(self.context))
-        url = getMultiAdapter((self.context, self.request),
-                              name='absolute_url')()
-        self.request.response.redirect(url + '/view')
+        return self.next_url()
 
 
-class GlobalConfigurationForm(grok.EditForm):
+class GlobalConfigurationForm(ConfigurationForm):
     """Editing the global configuration
     """
     grok.name("global_preview_configuration")
@@ -78,3 +78,8 @@ class GlobalConfigurationForm(grok.EditForm):
     
     # About the fields
     form_fields = form.FormFields(interfaces.IGlobalPreviewConfiguration)
+
+    def next_url(self):
+        url = getMultiAdapter((self.context, self.request),
+                              name='absolute_url')()
+        self.request.response.redirect(url + '/@@global_preview_configuration')

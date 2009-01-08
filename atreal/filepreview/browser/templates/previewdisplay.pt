@@ -1,2 +1,15 @@
-<div tal:condition="not:viewlet/hide|nothing" 
-     tal:content="structure viewlet/getPreview" />
+<tal:hide condition="not:viewlet/hide|nothing">
+
+     <div tal:condition="python:viewlet.display_choice==u'Embedded'"
+	  tal:content="structure viewlet/getPreview" />
+
+     <iframe
+	 tal:condition="python:viewlet.display_choice==u'iFrame'"
+	 tal:attributes="src string:${context/absolute_url}/@@fullscreen_preview"
+	 />
+     
+     <a href="" tal:attributes="href string:${context/absolute_url}/@@fullscreen_preview"
+	tal:condition="python:viewlet.display_choice==u'Popup'"
+	target="_blank">Voir la pr&eacute;visualisation</a>
+
+</tal:hide>
