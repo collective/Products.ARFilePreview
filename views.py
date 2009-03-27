@@ -93,33 +93,40 @@ class PreviewProvider( BrowserView ):
         logger = logging.getLogger('UpdateAllPreviewsLog')
         pc = self.context.portal_catalog
         #brains = pc(portal_type='File')
-        brains = pc(object_provides="Products.ARFilePreview.interfaces.IPreviewAware",sort_on='modified',sort_order='reverse')
+        brain_uids = [brain.UID
+                      for brain in pc(object_provides="Products.ARFilePreview.interfaces.IPreviewAware",sort_on='modified',sort_order='reverse')]
         status=""
-        for brain in brains:
+        for brain_uid in brain_uids:
+            brains = self.context.uid_catalog(UID = brain_uid)
+            if not len(brains):
+                logger.log(logging.ERROR, "UID catalog must be in a bad shape cause we didn't find the object")
+                continue
+            brain = brains[0]
             if updateNewOnly and ( brain.lastFileChange < brain.lastPreviewUpdate ):
                 continue
-            status+="<div>"+brain.getPath()
-            logger.log(logging.INFO, brain.getPath())
+            brain_path = brain.getPath()
+            status+="<div>"+brain_path
+            logger.log(logging.INFO, brain_path)
             try:
                 obj=brain.getObject()
                 IPreviewable(obj).updatePreview()
             except Exception, e:
-                msg = "%s %s %s" % (brain.getPath(), str(e.__class__.__name__), str(e))
+                msg = "%s %s %s" % (brain_path, str(e.__class__.__name__), str(e))
                 status+= "%s </div>" % msg
                 logger.log(logging.ERROR, msg)
             else:
-                msg = "%s OK" % (brain.getPath(),)
+                msg = "%s OK" % (brain_path,)
                 status+= "%s </div>" % msg
                 logger.log(logging.INFO, msg)
             try:
                 transaction.commit()
             except Exception, e:
-                msg = "Commit error on object %s : %s %s ; trying abort" % (brain.getPath(), str(e.__class__.__name__), str(e))
+                msg = "Commit error on object %s : %s %s ; trying abort" % (brain_path, str(e.__class__.__name__), str(e))
                 logger.log(logging.ERROR, msg)
                 try:
                     transaction.abort()
                 except:
-                    msg = "Abort error on object %s : %s %s " % (brain.getPath(), str(e.__class__.__name__), str(e))
+                    msg = "Abort error on object %s : %s %s " % (brain_path, str(e.__class__.__name__), str(e))
                     logger.log(logging.ERROR, msg)
                     pass
         msg = "updateAllPreviews : done"
