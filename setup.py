@@ -26,6 +26,7 @@ setup(name = name,
       zip_safe = False,
       install_requires=[
         'setuptools',
+        'troll.storage',
         'plone.transforms'
       ],
       classifiers = [

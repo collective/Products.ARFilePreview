@@ -39,16 +39,4 @@
     visible="True">
   <permission value="Modify portal content"/>
  </action>
- <action title="References" action_id="references" category="object"
-    condition_expr="object/archetype_tool/has_graphviz"
-    url_expr="string:${object_url}/reference_graph" visible="True">
-  <permission value="Modify portal content"/>
-  <permission value="Review portal content"/>
- </action>
- <action title="Configure Preview" action_id="configure_preview" category="object"
-    condition_expr=""
-    url_expr="string:${object_url}/@@file_preview_configuration" visible="True"
-    i18n:attributes="title">
-   <permission value="Modify portal content"/>
- </action>
 </object>

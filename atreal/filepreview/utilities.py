@@ -21,7 +21,6 @@ def arfilepreview_global_configuration(context):
 
 class GlobalConfiguration(SimpleItem):
     implements(IGlobalPreviewConfiguration)
-    quality = FieldProperty(IGlobalPreviewConfiguration['quality'])
     preview_display = FieldProperty(IGlobalPreviewConfiguration['preview_display'])
 
 

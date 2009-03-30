@@ -2,52 +2,42 @@
 
 import re
 import time
+import troll.storage as storage
 from five import grok
+from atreal.filepreview.storage import BlobFileInformation
 from zope.component import queryUtility, createObject
 from zope.annotation.interfaces import IAnnotations
 from plone.transforms.interfaces import ITransformEngine
 from Products.Archetypes.utils import shasattr
-from sd.common.fields.annotation import AdapterAnnotationProperty
-from sd.common.adapters.storage.interfaces import IDictStorage
 from utils import chunk2gen, text2gen, chunk2ugen, text2ugen, unicodegen
 from interfaces import *
 
 
-class PreviewConfigurationAdapter(grok.Adapter):
-    """This adapter will not yield to kiss the ground before your feet.
-    Instead, it will write the fields' values in an annotation :)
-    """
+_re_imgsrc = re.compile('<[iI][mM][gG]([^>]*) [sS][rR][cC]="([^">]*)"([^>]*)>')
+
+
+class ToPreviewableObject(storage.BaseStorageHandler):
     grok.context(IPreviewAware)
-    grok.implements(IPreviewConfiguration)
-    
-    quality = AdapterAnnotationProperty(
-        IPreviewConfiguration["quality"],
-        ns = "atreal.filepreview.configuration",
+    grok.provides(IPreviewable)
+
+    info = storage.AnnotationContainerProperty(
+        IPreviewable['info'],
+        ns='atreal.filepreview.info'
         )
 
-
-class ToPreviewableObject(grok.Adapter):
-
-    grok.context(IPreviewAware)
-    grok.implements(IPreviewable)
-
-    html = AdapterAnnotationProperty(
-        IPreviewable["html"],
-        ns = "atreal.filepreview.info",
+    storage = storage.AnnotationContainerProperty(
+        IPreviewable['storage'],
+        ns='atreal.filepreview.previews'
         )
 
-    lastFileChange = AdapterAnnotationProperty(
-        IPreviewable["lastFileChange"],
-        ns = "atreal.filepreview.info",
-        )
+    def __init__(self, context):
+        storage.BaseStorageHandler.__init__(self, context)
+        self.storage.lastPreviewUpdate = None
+        self.storage.lastFileChange = None
 
-    lastPreviewUpdate = AdapterAnnotationProperty(
-        IPreviewable["lastPreviewUpdate"],
-        ns = "atreal.filepreview.info",
-        )
-   
-    _re_imgsrc = re.compile('<[iI][mM][gG]([^>]*) [sS][rR][cC]="([^">]*)"([^>]*)>')
-    
+    def clear(self):
+        self.storage = storage.container.GenericStorage()
+        
     class _replacer(object):
         
         def __init__(self, sublist, instance):
@@ -73,11 +63,14 @@ class ToPreviewableObject(grok.Adapter):
         return bool(len(self.html))
     
     def setPreview(self, preview):
-        self.html = preview
-        #self.context.reindexObject()
+        creator = IPreviewCreator(self.context)
+        preview = creator.create(u'html', preview)
+        print 'Storing preview as %r' % preview
+        self.store(preview)
+        
     
     def getPreview(self, mimetype="text/html"):
-        data = self.html
+        data = self.retrieve(u'html')
         if (mimetype!="text/html"
                 and data is not None
                 and data != ''):
@@ -91,13 +84,10 @@ class ToPreviewableObject(grok.Adapter):
 
     def setSubObject(self, name, data):
         obj = IPreviewCreator(self.context).create(name, data)
-        return IDictStorage(self.context).store(obj)
+        return self.store(obj)
 
     def getSubObject(self, id):
-        return IDictStorage(self.context).retrieve(id)
-
-    def clearSubObjects(self):
-        return IDictStorage(self.context).clear()
+        return self.retrieve(id)
     
     def buildAndStorePreview(self):
         self.fileModified()
@@ -137,7 +127,7 @@ class ToPreviewableObject(grok.Adapter):
                                       'text/html')
 
         if result is None:
-            self.setPreview(u"")
+            self.delete(u'html')
             print "No preview!"
             return False
         
@@ -153,22 +143,21 @@ class ToPreviewableObject(grok.Adapter):
             # transorm iterators to strings for subobjects
             # we should return the iterator, but it's not possible in sub-objects right now...
             self.setSubObject(subobj, ''.join(subobjs[subobj]))
-        html_converted = self._re_imgsrc.sub(
+        html_converted = _re_imgsrc.sub(
             self._replacer(subobjs.keys(), self.context), html_converted
             )
         
         #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted)
-        self.lastPreviewUpdate = time.time()
+        self.storage.lastPreviewUpdate = time.time()
         return True
     
     def fileModified(self):
         """
         File has been modified ; store this date for further comparizon
         """
-        self.clearSubObjects()
-        self.html = u""
-        self.lastFileChange = time.time()
+        self.clear()
+        self.storage.lastFileChange = time.time()
     
     def updatePreview(self):
         """

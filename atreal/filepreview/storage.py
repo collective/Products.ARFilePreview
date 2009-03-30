@@ -2,13 +2,11 @@
 
 import os
 from five import grok
+import troll.storage as storage
 from OFS.SimpleItem import SimpleItem
 from Products.blob.file import FileBlob
 from zope.interface import implements, Attribute
 from zope.schema.fieldproperty import FieldProperty
-from sd.common.fields.annotation import AdapterAnnotationProperty
-from sd.common.adapters.storage.annotation import GenericAnnotationStorage
-from sd.common.adapters.storage.interfaces import IStorageItem, IDictStorage
 from atreal.filepreview.interfaces import IPreviewAware, IPreviewCreator
 from Products.CMFCore.utils import getToolByName
 from Products.ATContentTypes.interface.file import IATFile
@@ -16,8 +14,8 @@ from Products.BlobFile.file import BlobFile
 
 
 class SimpleFileInformation(SimpleItem):
-    implements(IStorageItem)
-    name = FieldProperty(IStorageItem['name'])
+    implements(storage.IStorageItem)
+    name = FieldProperty(storage.IStorageItem['name'])
     data = Attribute("The data to store")
     mime = Attribute("Mimetype of the file")
 
@@ -56,15 +54,16 @@ class BlobFileInformation(SimpleFileInformation):
     data = property(getData, setData)
     
 
-class PreviewInformationStorage(GenericAnnotationStorage):
+class PreviewInformationStorage(storage.BaseStorageHandler):
     grok.context(IPreviewAware)
-    storage = AdapterAnnotationProperty(
-        IDictStorage['storage'],
-        ns="atreal.filepreview"
+    
+    storage = storage.AnnotationContainerProperty(
+        storage.IStorageHandler['storage'],
+        ns="atreal.filepreview.previews"
         )
 
     def clear(self):
-        self.storage = dict()
+        self.storage = storage.container.GenericStorage()
 
 
 class BasePreviewCreator(grok.Adapter):

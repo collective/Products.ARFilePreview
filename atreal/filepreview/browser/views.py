@@ -87,7 +87,7 @@ class PreviewTraverser(grok.MultiAdapter):
         self.request = request       
 
     def traverse(self, name, ignore):
-        info = IDictStorage(self.context).retrieve(name)
+        info = interfaces.IPreviewable(self.context).retrieve(name)
         if info is None:
             raise NotFound(self.context, name, self.request)
     

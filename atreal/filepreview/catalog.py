@@ -9,16 +9,17 @@ def previewIndexWrapper(object, portal, **kwargs):
     obj = IPreviewable(object, None)
     if obj is not None:
         preview = obj.getPreview(mimetype="text/plain")
-        return " ".join([data, preview])
+        if preview:
+            return " ".join([data, preview])
     return data
 
 def lastPreviewUpdate(object, portal, **kwargs):    
     obj = IPreviewable(object, None)
-    return obj and obj.lastPreviewUpdate or None
+    return obj and obj.storage.lastPreviewUpdate or None
 
 def lastFileChange(object, portal, **kwargs):
     obj = IPreviewable(object, None)
-    return obj and obj.lastFileChange or None
+    return obj and obj.storage.lastFileChange or None
 
 
 registerIndexableAttribute('SearchableText', previewIndexWrapper)
