@@ -1,6 +1,0 @@
-<configure xmlns="http://namespaces.zope.org/grok">
-
-  <grok package=".views" />
-  <grok package=".forms" />
-
-</configure>
