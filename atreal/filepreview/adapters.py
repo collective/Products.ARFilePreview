@@ -11,9 +11,19 @@ from plone.transforms.interfaces import ITransformEngine
 from Products.Archetypes.utils import shasattr
 from utils import chunk2gen, text2gen, chunk2ugen, text2ugen, unicodegen
 from interfaces import *
-
+from htmlentitydefs import codepoint2name
 
 _re_imgsrc = re.compile('<[iI][mM][gG]([^>]*) [sS][rR][cC]="([^">]*)"([^>]*)>')
+
+
+def htmlentities(u):
+    result = []
+    for c in u:
+        if ord(c) < 128 or c == ' ':
+            result.append(c)
+        else:
+            result.append('&%s;' % codepoint2name.get(ord(c), 'nbsp'))
+    return ''.join(result)
 
 
 class ToPreviewableObject(storage.BaseStorageHandler):
@@ -70,7 +80,8 @@ class ToPreviewableObject(storage.BaseStorageHandler):
         
     
     def getPreview(self, mimetype="text/html"):
-        data = self.retrieve(u'html')
+        html = self.retrieve(u'html')
+        data = html is not None and html.data or None
         if (mimetype!="text/html"
                 and data is not None
                 and data != ''):
@@ -135,7 +146,7 @@ class ToPreviewableObject(storage.BaseStorageHandler):
         #XXX load all the html in memory.... We should have an iterator here, if possible
         html_converted = u''.join(result.data)
         #update internal links
-        #remove bad character '\xef\x81\xac' from HTMLPreview
+        #remove bad characters
         html_converted = re.sub('\xef\x81\xac', "", html_converted)
         # patch image sources since html base is that of our parent
         subobjs = result.subobjects
@@ -148,7 +159,7 @@ class ToPreviewableObject(storage.BaseStorageHandler):
             )
         
         #store the html in the HTMLPreview field for preview
-        self.setPreview(html_converted)
+        self.setPreview(htmlentities(html_converted))
         self.storage.lastPreviewUpdate = time.time()
         return True
     

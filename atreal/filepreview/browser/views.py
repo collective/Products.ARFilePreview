@@ -37,7 +37,7 @@ class PreviewUpdater(grok.View):
         return self.render()
 
     def render(self):
-        return u""
+        return True
 
 
 class FileAsDoc(grok.View):
@@ -46,7 +46,7 @@ class FileAsDoc(grok.View):
 
     def getPreview(self):
         previewable = interfaces.IPreviewable(self.context)
-        return previewable.getPreview() 
+        return previewable.getPreview()
 
 
 class FullscreenPreview(FileAsDoc):
@@ -72,7 +72,7 @@ class PreviewDisplay(grok.Viewlet):
 
     def getPreview(self):
         previewable = interfaces.IPreviewable(self.context)
-        return previewable.getPreview() 
+        return previewable.getPreview()
 
 
 

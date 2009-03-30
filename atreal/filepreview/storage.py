@@ -39,7 +39,7 @@ class BlobFileInformation(SimpleFileInformation):
     def setData(self, value):
         os.environ['BLOB_DIR'] = self.path
         blob = self._blob = FileBlob()
-        file = blob.open('wb')
+        file = blob.open('w')
         file.write(value)
         file.close()
         return blob
