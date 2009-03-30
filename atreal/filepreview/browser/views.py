@@ -10,7 +10,6 @@ from zope.component import getUtility
 from zope.traversing.interfaces import ITraversable
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.cachedescriptors.property import CachedProperty
-from sd.common.adapters.storage.interfaces import IDictStorage
 
 
 grok.templatedir('templates')
