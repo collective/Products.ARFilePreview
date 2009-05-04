@@ -1,0 +1,31 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: ARFilePreview 2.0\n"
+"POT-Creation-Date: 2005-03-11 02:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-encodings: latin1 utf-8\n"
+"Domain: plone\n"
+
+msgid "full_screen"
+msgstr ""
+
+msgid "file_asdoc"
+msgstr ""
+
+msgid "file_preview"
+msgstr ""
+
+msgid "View File"
+msgstr ""
+
