@@ -134,7 +134,7 @@ class ToPreviewableObject( object ):
             html_converted = self._re_imgsrc.sub(self._replacer(subobjs.keys(), self.context), html_converted)
         #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted.decode('utf-8', "replace"))
-	self.context.reindexObject()
+        self.context.reindexObject()
 
 def previewIndexWrapper(object, portal, **kwargs):
     data = object.SearchableText()
