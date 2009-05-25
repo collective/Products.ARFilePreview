@@ -42,9 +42,11 @@ class ToPreviewableObject(storage.BaseStorageHandler):
 
     def __init__(self, context):
         storage.BaseStorageHandler.__init__(self, context)
-        self.storage.lastPreviewUpdate = None
-        self.storage.lastFileChange = None
-
+        if not getattr(self.storage, 'lastPreviewUpdate'):
+            self.storage.lastPreviewUpdate = None
+        if not getattr(self.storage, 'lastFileChange'):
+            self.storage.lastFileChange = None
+        
     def clear(self):
         self.storage = storage.container.GenericStorage()
         

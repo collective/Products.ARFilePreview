@@ -4,6 +4,7 @@ from five import grok
 from zope.event import notify
 from zope.formlib import form
 from zope.component import getMultiAdapter
+from zope.component import getUtility
 from plone.app.form.events import EditCancelledEvent, EditSavedEvent
 from Products.CMFPlone import PloneMessageFactory as __
 from atreal.filepreview import interfaces
@@ -50,6 +51,32 @@ class GlobalConfigurationForm(grok.EditForm):
     @form.action(__(u"label_cancel", default=u"Cancel"), name=u'cancel')
     def handle_cancel_action(self, action, data):
         return self.next_url(target="/plone_control_panel")
+
+
+    @form.action(_(u"label_update_allpreviews",
+                   default="Update all previews"),
+                 condition=form.haveInputWidgets,
+                 name=u'updateallpreviews')
+    def handle_updateall(self, action, data):
+        error, status = getUtility(interfaces.IGlobalPreviewHandler).updateAllPreviews(self.context)
+        if not error:
+            self.status = u"Previews successfully updated."
+        else:
+            self.status = u"There was some errors while processing. Please check the logs."
+            self.errors = True
+            
+            
+    @form.action(_(u"label_update_newpreview",
+                   default="Update new previews"),
+                 condition=form.haveInputWidgets,
+                 name=u'updatenewpreviews')
+    def handle_updatenew(self, action, data):
+        error, status = getUtility(interfaces.IGlobalPreviewHandler).updateNewPreviews(self.context)
+        if not error:
+            self.status = u"Previews successfully updated."
+        else:
+            self.status = u"There was some errors while processing. Please check the logs."
+            self.errors = True
 
 
     def next_url(self, target=None):

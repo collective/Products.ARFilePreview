@@ -108,6 +108,8 @@
           <div class="widget formlibInlineValidation" tal:content="structure widget">
           <input type="text" /></div>
     </div>
+
+         
 </tal:block>
 
   <metal:block define-slot="above_buttons" />
