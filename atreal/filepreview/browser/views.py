@@ -31,8 +31,12 @@ class PreviewUpdater(grok.View):
         self.previewable.buildAndStorePreview()
         self.request.response.redirect(self.context.absolute_url()+'/view')
 
+    def deletePreviewOnDemand(self):
+        self.previewable.clear()
+        self.request.response.redirect(self.context.absolute_url()+'/view')
+
     def publishTraverse(self, request, name):
-        if name in ['updatePreview', 'updatePreviewOnDemand']:
+        if name in ['updatePreview', 'updatePreviewOnDemand', 'deletePreviewOnDemand']:
             return getattr(self, name)()
         return self.render()
 
