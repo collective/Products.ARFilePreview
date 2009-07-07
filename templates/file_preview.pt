@@ -17,66 +17,49 @@
 
         <div tal:replace="structure provider:plone.abovecontenttitle" />
 
-        <h1 metal:use-macro="here/kss_generic_macros/macros/generic_title_view">
-            Title or id
+
+        <h1 class="documentFirstHeading"> 
+            <metal:field use-macro="python:here.widget('title', mode='view')">
+            Title
+            </metal:field>
         </h1>
 
         <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-        <p metal:use-macro="here/kss_generic_macros/macros/generic_description_view">
-          Description
+        <p class="documentDescription">
+            <metal:field use-macro="python:here.widget('description', mode='view')">
+            Description
+            </metal:field>
         </p>
+
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
         <p>
-            <a href=""
-               tal:attributes="href string:${here_url}/at_download/file">
-                <img src="" tal:define="icon python:here.getIcon(1)" tal:attributes="src string:${portal_url}/${icon}" alt="" />
-                <tal:block i18n:translate="label_click_to_get_file">
-                Click here to get the file
-                </tal:block>
-            </a>
+            <metal:field use-macro="python:here.widget('file', mode='view')">
+            File
+            </metal:field>
         </p>
-        <small class="discreet">
-            <span i18n:translate="label_size">
-            Size
-            </span>
-            
-            <span tal:condition="size"
-                tal:content="size">
-            257 KB
-            </span>
+
+        <fieldset id="preview" tal:condition="here/@@preview_provider/hasPreview">
+            <legend style="font-size:150%">
+                <i18n:block translate="heading_file_contents">
+                    File contents
+                </i18n:block>
+                <span style="font-size:80% !important">
+                    ( <a tal:attributes="href python:here.absolute_url()+'/@@preview_provider'"
+                         i18n:translate="full_screen">Full screen</a> )
+                  </span>
+                </legend>
+                <br/>
     
-            <span tal:condition="not:size" i18n:translate="no_file_uploaded">
-              (No file has been uploaded yet)
-            </span>
-
-            -
-
-            <span i18n:translate="label_file_type">
-            File type
-            </span>
-
-            <span tal:content="content_type">
-            Content type
-            </span>
-        </small>
-
+            <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
+                  tal:content="structure here/@@preview_provider/getPreview" />
+        </fieldset>   
 
         <div metal:use-macro="here/document_relateditems/macros/relatedItems">
             show related items if they exist
         </div>
 
-        <div class="row"
-             tal:condition="here/@@preview_provider/hasPreview">
-            <a tal:attributes="href python:here.absolute_url()+'/@@preview_provider'"
-               style="float: right;" target="_blank" i18n:translate="full_screen">Full screen</a>
-    
-            <h2 i18n:translate="heading_file_contents">File contents</h2>
-    
-            <div class="collapsibleContent" style="position: relative; overflow: auto; height: 400px;"
-                  tal:content="structure here/@@preview_provider/getPreview" />
-        </div>   
 
         <div tal:replace="structure provider:plone.belowcontentbody" />
 
