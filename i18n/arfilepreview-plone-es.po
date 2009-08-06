@@ -22,7 +22,7 @@ msgid "full_screen"
 msgstr "Pantalla completa"
 
 msgid "file_asdoc"
-msgstr "Solamente previsualizar"
+msgstr "Solamente pre-visualizar"
 
 msgid "file_preview"
 msgstr "Archivo más previsualizar"
