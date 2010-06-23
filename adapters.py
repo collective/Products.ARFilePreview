@@ -113,7 +113,7 @@ class ToPreviewableObject( object ):
     
     def setPreview(self, preview):
         self.annotations[self.key]['html'] = preview
-        self.context.reindexObject()
+        self.context.reindexObject(idxs=['SearchableText',])
     
     def getPreview(self, mimetype="text/html"):
         data = self.annotations[self.key]['html']
@@ -121,8 +121,7 @@ class ToPreviewableObject( object ):
                 and data is not None
                 and data != ''):
             transforms = queryUtility(ITransformEngine)
-            
-            filename = self.context.getPrimaryField().getAccessor(self.context)().filename+".html"
+            #filename = self.context.getPrimaryField().getAccessor(self.context)().filename+".html"
             result = transforms.transform(data,'text/html', mimetype)
             if result is not None :
                 return u''.join(result.data)
@@ -192,14 +191,14 @@ class ToPreviewableObject( object ):
         
         #store the html in the HTMLPreview field for preview
         self.setPreview(html_converted)
-	self.context.reindexObject()
+        #self.context.reindexObject(idxs=['SearchableText',])
 
 def previewIndexWrapper(object, portal, **kwargs):
     data = object.SearchableText()
     try:
         obj = IPreviewable(object)
         preview = obj.getPreview(mimetype="text/plain")
-        return " ".join([data, preview])
+        return " ".join([data, preview.encode('utf-8')])
     except (ComponentLookupError, TypeError, ValueError):
         # The catalog expects AttributeErrors when a value can't be found
         return data

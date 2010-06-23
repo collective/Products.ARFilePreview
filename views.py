@@ -93,7 +93,7 @@ class PreviewProvider( BrowserView ):
             try:
                 obj=brain.getObject()
                 IPreviewable(obj).buildAndStorePreview()
-                obj.reindexObject()
+                obj.reindexObject(idxs=['SearchableText'])
             except Exception, e:
                 status+=" %s %s</div>" % (str(e.__class__.__name__), str(e))
             else:
