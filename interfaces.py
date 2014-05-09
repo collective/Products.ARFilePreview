@@ -32,7 +32,7 @@ __licence__ = 'GPL'
 
 
 from zope.interface import Interface
-from zope.app.event.interfaces import IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 
 
 class IPreviewAware( Interface ):

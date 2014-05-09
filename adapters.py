@@ -33,16 +33,17 @@ __licence__ = 'GPL'
 import re
 from DateTime import DateTime
 
-from zope.interface import implements
-from zope.component.exceptions import ComponentLookupError
-from zope.app.traversing.adapters import Traverser
-from zope.app.annotation.interfaces import IAnnotations
+from zope.interface import implements, Interface
+from zope.component.interfaces import ComponentLookupError
+from zope.traversing.adapters import Traverser
+from zope.annotation.interfaces import IAnnotations
 
 from BTrees.OOBTree import OOBTree
 from Products.CMFCore.utils import getToolByName
 from Products.ARFilePreview.interfaces import IPreviewable
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.CatalogTool import registerIndexableAttribute
+#from Products.CMFPlone.CatalogTool import registerIndexableAttribute
+from plone.indexer import indexer
 
 class ToPreviewableObject( object ):
     
@@ -60,6 +61,9 @@ class ToPreviewableObject( object ):
             prefix = match.group(1)
             inside = match.group(2)
             postfix = match.group(3)
+
+            pos = inside.rfind('/')
+            inside = inside[pos+1:]
             # patch inside
             if inside.startswith('./'):
                 # some .swt are converted with this prefix
@@ -136,6 +140,7 @@ class ToPreviewableObject( object ):
         self.setPreview(html_converted.decode('utf-8', "replace"))
 	self.context.reindexObject()
 
+@indexer(Interface)
 def previewIndexWrapper(object, portal, **kwargs):
     data = object.SearchableText()
     try:
@@ -146,4 +151,4 @@ def previewIndexWrapper(object, portal, **kwargs):
         # The catalog expects AttributeErrors when a value can't be found
         return data
 
-registerIndexableAttribute('SearchableText', previewIndexWrapper)
+#registerIndexableAttribute('SearchableText', previewIndexWrapper)

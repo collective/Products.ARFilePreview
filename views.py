@@ -103,6 +103,8 @@ class PreviewProvider( BrowserView ):
         except AttributeError:
             pass
         else:
-            return Wrapper(data, name, mime).__of__(self)
+            return Wrapper(data, name, mime).__of__(self.context)
         return getattr(self, name)
 
+    def publishTraverse(self, request, name):
+        return self.__bobo_traverse__(request, name)
