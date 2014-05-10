@@ -43,15 +43,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import MessageFactory
 mf = MessageFactory('eventsubscription')
 
-# Imports: Archetypes
-from Products.Archetypes.BaseObject import Wrapper
-
-# Imports: ARFilePreview
+# Imports: ARDeadline
 from Products.ARFilePreview.interfaces import IPreviewable
 from Products.ARFilePreview.interfaces import IPreviewProvider
+from Products.Archetypes.BaseObject import Wrapper
 
-import transaction
-import logging
 
 class PreviewProvider( BrowserView ):
 
@@ -63,84 +59,44 @@ class PreviewProvider( BrowserView ):
         self.object = IPreviewable(context)
        
     def hasPreview(self):
-        u"""
+        """
         """
         return self.object.hasPreview()
   
     def getPreview(self):
-        u"""
         """
-        return self.object.getPreview() 
+        """
+        return self.object.getPreview()
     
     def updatePreview(self):
-        u"""
+        """
         """
         self.object.buildAndStorePreview()
-
-    def updatePreviewOnDemand(self):
-        u"""
-        """
-        self.object.buildAndStorePreview()
-        self.request.response.redirect(self.context.absolute_url()+'/view')
-
+    
 
     ## XXX This should NOT be here !!
     ## but I wanted the feature badly...
-    def updateAllPreviews(self, updateNewOnly = False):
-        u"""
-        update all objects' preview ; may be usefull if you change a transform
+    def updateAllPreviews(self):
         """
-        logger = logging.getLogger('UpdateAllPreviewsLog')
+        """
         pc = self.context.portal_catalog
-        #brains = pc(portal_type='File')
-        brains = pc(object_provides="Products.ARFilePreview.interfaces.IPreviewAware",sort_on='modified',sort_order='reverse')
+        brains = pc(portal_type='File')
         status=""
         for brain in brains:
-            if updateNewOnly and ( brain.lastFileChange < brain.lastPreviewUpdate ):
-                continue
             status+="<div>"+brain.getPath()
-            logger.log(logging.INFO, brain.getPath())
             try:
                 obj=brain.getObject()
-                IPreviewable(obj).updatePreview()
+                IPreviewable(obj).buildAndStorePreview()
                 obj.reindexObject()
-                
             except Exception, e:
-                msg = "%s %s %s" % (brain.getPath(), str(e.__class__.__name__), str(e))
-                status+= "%s </div>" % msg
-                logger.log(logging.ERROR, msg)
+                status+=" %s %s</div>" % (str(e.__class__.__name__), str(e))
             else:
-                msg = "%s OK" % (brain.getPath(),)
-                status+= "%s </div>" % msg
-                logger.log(logging.INFO, msg)
-            try:
-                transaction.commit()
-            except Exception, e:
-                msg = "Commit error on object %s : %s %s ; trying abort" % (brain.getPath(), str(e.__class__.__name__), str(e))
-                logger.log(logging.ERROR, msg)
-                try:
-                    transaction.abort()
-                except:
-                    msg = "Abort error on object %s : %s %s " % (brain.getPath(), str(e.__class__.__name__), str(e))
-                    logger.log(logging.ERROR, msg)
-                    pass
-        msg = "updateAllPreviews : done"
-        if updateNewOnly:
-            msg += " (only files newly updated)"
-        status+= "<div>%s </div>" % msg
-        logger.log(logging.INFO, msg)
-        return status
-    
-    def updateNewPreviews(self):
-        u"""
-        update all modified objects' preview
-        can be run in a periodic batch
-        """
-        status = self.updateAllPreviews(updateNewOnly = True)
+                status+=" OK</div>\n"
         return status
 
+
     def __bobo_traverse__(self, REQUEST, name):
-        u'''transparent access to document subobjects
+        '''transparent access to document subobjects
         '''
         try:
             data, mime = self.object.getSubObject(name)
