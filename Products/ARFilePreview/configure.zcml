@@ -1,11 +1,21 @@
 <configure xmlns="http://namespaces.zope.org/zope"
 	   xmlns:browser="http://namespaces.zope.org/browser"
+     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
 	   xmlns:five="http://namespaces.zope.org/five">
 
   <include package="zope.annotation" />
+  <include package="plone.app.contentmenu" />
 
+  <genericsetup:registerProfile
+      name="default"
+      title="ARFilePreview"
+      directory="profiles/default"
+      description="Install the ARFilePreview product"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      />
 
-  <five:implements class="Products.ATContentTypes.content.file.ATFile"
+  <five:implements class="plone.app.blob.content.ATBlob"
 	      interface=".interfaces.IPreviewAware
                          zope.annotation.interfaces.IAttributeAnnotatable" />
 
@@ -48,6 +58,22 @@
            Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler=".events.buildAndStorePreview"
       />
+
+<browser:menuItem
+        for="Products.ATContentTypes.interface.IATFile"
+        menu="plone_displayviews"
+        title="Preview as doc"
+        action="@@file_asdoc"
+        description="Preview file as doc"
+        />
+
+<browser:menuItem
+        for="Products.ATContentTypes.interface.IATFile"
+        menu="plone_displayviews"
+        title="Preview file"
+        action="@@file_preview"
+        description="Preview file contents"
+        />
 
 </configure>
 
