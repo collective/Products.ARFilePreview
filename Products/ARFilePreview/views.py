@@ -35,11 +35,15 @@ from Acquisition import aq_inner
 from Products.Five  import BrowserView
 from zope.event import notify
 from zope.interface import implements
+from zope.component import queryUtility
+from zope.component import getMultiAdapter
 
 # Imports: CMF
 from Products.CMFCore.utils import getToolByName
 
 # Import Plone
+from plone.portlets.interfaces import IPortletManager
+from plone.portlets.interfaces import IPortletAssignmentMapping
 from Products.CMFPlone import MessageFactory
 mf = MessageFactory('eventsubscription')
 
@@ -49,16 +53,32 @@ from Products.ARFilePreview.interfaces import IPreviewProvider
 from Products.Archetypes.BaseObject import Wrapper
 from events import buildAndStorePreview
 
+try:
+    from eea.annotator.portlets.annotator import Assignment
+except ImportError:
+    Assignment = None
 
 class GenPreview(BrowserView):
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
+    def add_portlet(self, target):
+        if not Assignment:
+            return
+        manager = queryUtility(IPortletManager, 'plone.rightcolumn',
+            context=target)
+        assignments = getMultiAdapter((target, manager),
+            IPortletAssignmentMapping)
+        if 'inline-comments' not in assignments:
+            assignments['inline-comments'] = Assignment()
+
     def __call__(self):
-        buildAndStorePreview(self.context, None)
-        self.context.setLayout('file_asdoc')
-        self.request.response.redirect(self.context.absolute_url() + '/view')
+        target = self.context
+        buildAndStorePreview(target, None)
+        target.setLayout('file_asdoc')
+        self.add_portlet(target)
+        self.request.response.redirect(target.absolute_url() + '/view')
 
 class PreviewProvider( BrowserView ):
 
