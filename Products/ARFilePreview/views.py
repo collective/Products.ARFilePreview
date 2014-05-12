@@ -47,7 +47,18 @@ mf = MessageFactory('eventsubscription')
 from Products.ARFilePreview.interfaces import IPreviewable
 from Products.ARFilePreview.interfaces import IPreviewProvider
 from Products.Archetypes.BaseObject import Wrapper
+from events import buildAndStorePreview
 
+
+class GenPreview(BrowserView):
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        buildAndStorePreview(self.context, None)
+        self.context.setLayout('file_asdoc')
+        self.request.response.redirect(self.context.absolute_url() + '/view')
 
 class PreviewProvider( BrowserView ):
 

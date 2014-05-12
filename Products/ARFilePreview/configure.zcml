@@ -24,6 +24,13 @@
 	   provides=".interfaces.IPreviewable" />
 
   <browser:page
+      for="*"
+      name="generate_preview"
+      class=".views.GenPreview"
+      permission="zope2.View"
+      />
+
+  <browser:page
       for=".interfaces.IPreviewAware"
       name="preview_provider"
       class=".views.PreviewProvider"
@@ -47,7 +54,7 @@
       permission="zope2.View"
       />
 
-  <subscriber
+  <!-- subscriber
       for=".interfaces.IPreviewAware
            Products.Archetypes.interfaces.IObjectEditedEvent"
       handler=".events.buildAndStorePreview"
@@ -57,7 +64,7 @@
       for=".interfaces.IPreviewAware
            Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler=".events.buildAndStorePreview"
-      />
+      / -->
 
 <browser:menuItem
         for="Products.ATContentTypes.interface.IATFile"
