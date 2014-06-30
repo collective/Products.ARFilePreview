@@ -58,6 +58,11 @@ try:
 except ImportError:
     Assignment = None
 
+try:
+    from plonetheme.drincorda.patches import my_enable
+except ImportError:
+    my_enable = None
+
 class GenPreview(BrowserView):
     def __init__(self, context, request):
         self.context = context
@@ -78,6 +83,8 @@ class GenPreview(BrowserView):
         buildAndStorePreview(target, None)
         target.setLayout('file_asdoc')
         self.add_portlet(target)
+        if my_enable:
+            my_enable(target)
         self.request.response.redirect(target.absolute_url() + '/view')
 
 class PreviewProvider( BrowserView ):
